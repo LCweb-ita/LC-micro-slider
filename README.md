@@ -24,7 +24,6 @@ Only requirement is jQuery v1.5 (but please, do not expect IE8 support!)
 For demos, **documentation** and usage notes check:
 http://www.lcweb.it/lc-micro-slider-jquery-plugin
 
-==============
 
 *PS: public release starts at v1.2 - initially it was developed to be used into [Media Grid - wordpress portfolio](http://www.lcweb.it/media-grid)* 
 
