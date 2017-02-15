@@ -15,7 +15,7 @@
 			nav_dots		: true,		// (bool) shows navigation dots
 			slideshow_cmd	: true,		// (bool) shows slideshow commands (play/pause)
 			carousel		: true,		// (bool) non-stop carousel
-			touchswipe		: true,		// (bool) enable touch navigation (requires hammer.js)
+			touchswipe		: true,		// (bool) enable touch navigation (requires jquery.touchSwipe.js)
 			autoplay		: false,	// (bool) starts the slideshow
 			animation_time	: 700, 		// (int) animation timing in millisecods / 1000 = 1sec
 			slideshow_time	: 5000, 	// (int) interval time of the slideshow in milliseconds / 1000 = 1sec	
