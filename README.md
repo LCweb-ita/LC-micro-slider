@@ -5,13 +5,16 @@ Why another jQuery slider plugin?
 Well: 
 * is easy to use
 * modern (CSS based)
-* as responsive as you prefer
+* as responsive as you need
 * super-easy to customize and extend
 * has got public methods and actions
 * can slide anything
 * is just 13KB (JS + CSS)
 
-..and yes, has got an **image lazyloader**! 
+..and yes, has got an **image lazyloader**!
+
+==============
+ 
 Including [TouchSwipe](https://github.com/mattbryson/TouchSwipe-Jquery-Plugin), it also supports touch interactions.
 
 Only requirement is jQuery v1.5 (but please, do not expect IE8 support!)
