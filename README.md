@@ -14,8 +14,6 @@ Well:
 ..and yes, has got an **image lazyloader**! 
 Including [TouchSwipe](https://github.com/mattbryson/TouchSwipe-Jquery-Plugin), it also supports touch interactions.
 
-==============
-
 Only requirement is jQuery v1.5 (but please, do not expect IE8 support!)
 
 ==============
