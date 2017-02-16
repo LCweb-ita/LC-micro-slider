@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LC Micro Slider - ken burs</title>
+
+
+<script src="https://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
+
+<script src="../assets/jquery.touchSwipe.min.js" type="text/javascript"></script>
+<script src="../js/lc-micro-slider.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../css/lc-micro-slider.css" />
+<link rel="stylesheet" href="../css/default_style.css" />
+
+
+
+<style type="text/css">
+/* resetter */
+a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
+
+
+/* AVOID ISSUES ON LOCAL WITH ICONS - ignore this on production */
+@font-face {
+	font-family: 'lcms';
+	src:
+		url('font/fonts/lcms.woff') format('woff'),
+		url('font/fonts/lcms.ttf') format('truetype'),
+		url('font/fonts/lcms.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+/**************************************************************/
+
+
+body * {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	box-sizing: border-box;	
+}
+h1, h3 {
+	text-align: center;
+	padding: 12px 50px;
+}
+h1 {
+	font-weight: bold;
+	font-size: 34px;	
+	padding-bottom: 0;
+	margin-top: 18px;
+}
+h3 {a
+	font-size: 17px;	
+}
+#slide_wrap {
+	width: 90%;
+	max-width: 1200px;
+	height: 58vw;
+    max-height: 670px;	
+	background: #eee;
+	margin: 50px auto;
+}
+#slide_wrap:before {
+	content: "No autoplay - simple slide - no play/pause";	
+	font-size: 19px;
+    position: absolute;
+    top: -40px;
+}
+
+@media screen and (max-width:1340px) {
+	#slide_wrap {
+		position: static;	
+		margin: 100px auto;
+		
+		-webkit-transform:  translate3d(0, 0, 0);
+		-ms-transform: 		translate(0, 0);
+		transform: 			translate3d(0, 0, 0);
+	}
+	#slide_wrap:before {
+		top: -52px;
+		font-size: 16px;
+		line-height: 21px;	
+	}
+}
+</style>
+</head>
+
+<body>
+	<h1>LC Micro Slider</h1>
+	<h3>A superlight jquery plugin by <a href="http://lcweb.it/" target="_blank">LCweb</a></h3>
+
+	<div id="slide_wrap">
+      <ul style="display: none;">
+        <li lcms_img="https://images.unsplash.com/photo-1470165511815-34e78ff7a111?dpr=1&auto=format&fit=crop&w=1500&h=1000&q=80"></li>
+        <li lcms_img="https://images.unsplash.com/photo-1481777198967-38af7434dd5d?dpr=1&auto=format&fit=crop&w=1500&h=1000&q=80"></li>
+        <li lcms_img="https://images.unsplash.com/photo-1483388381485-344c3a9ded7f?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80"></li>
+      </ul>
+    </div>
+    
+	<script type="text/javascript">
+    $(document).ready(function(e) {
+		$('#slide_wrap').lc_micro_slider({
+			slide_fx : 'zoom-out',
+			animation_time	: 1000,
+			slideshow_time	: 6000,
+			nav_arrows : false,  
+			slideshow_cmd : false,
+			nav_dots : false,
+			autoplay: true,
+			pause_on_hover: false
+	  });
+	
+	
+		//// ken burns effect
+		// get random value for random direction
+		function lcms_kenburns_random_vert() {
+			var vals = ["top", "botom"];
+		   return vals[Math.floor(Math.random() * vals.length)];
+		}
+		function lcms_kenburns_random_horiz() {
+			var vals = ["left", "right"];
+			return vals[Math.floor(Math.random() * vals.length)];
+		}
+	
+		// catch event	
+		$(document).on('lcms_initial_slide_shown lcms_new_active_slide', '#slide_wrap', function(e, slide_index) {	
+	
+			var time = $(this).data('lcms_settings').slideshow_time;
+	
+			var props = {};
+			props[ lcms_kenburns_random_vert() ] = '-20%';
+			props[ lcms_kenburns_random_horiz() ] = '-20%';
+	
+			$(this).find('.lcms_slide[rel='+slide_index+'] .lcms_bg').animate(props, time, 'linear'); 
+		});
+	});
+    </script>
+
+</body>
+</html>

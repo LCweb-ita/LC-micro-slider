@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LC Micro Slider - custom skin</title>
+
+
+<script src="https://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
+
+<script src="../assets/jquery.touchSwipe.min.js" type="text/javascript"></script>
+<script src="../js/lc-micro-slider.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../css/lc-micro-slider.css" />
+
+
+
+<style type="text/css">
+/* resetter */
+a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
+
+
+/* AVOID ISSUES ON LOCAL WITH ICONS - ignore this on production */
+@font-face {
+	font-family: 'lcms';
+	src:
+		url('font/fonts/lcms.woff') format('woff'),
+		url('font/fonts/lcms.ttf') format('truetype'),
+		url('font/fonts/lcms.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+/**************************************************************/
+
+
+body * {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	box-sizing: border-box;	
+}
+h1, h3 {
+	text-align: center;
+	padding: 12px 50px;
+}
+h1 {
+	font-weight: bold;
+	font-size: 34px;	
+	padding-bottom: 0;
+	margin-top: 18px;
+}
+h3 {a
+	font-size: 17px;	
+}
+#slide_wrap {
+	width: 90%;
+	max-width: 1200px;
+	height: 58vw;
+    max-height: 670px;	
+	background: #eee;
+	margin: 50px auto;
+}
+#slide_wrap:before {
+	content: "No autoplay - simple slide - no play/pause";	
+	font-size: 19px;
+    position: absolute;
+    top: -40px;
+}
+
+@media screen and (max-width:1340px) {
+	#slide_wrap {
+		position: static;	
+		margin: 100px auto;
+		
+		-webkit-transform:  translate3d(0, 0, 0);
+		-ms-transform: 		translate(0, 0);
+		transform: 			translate3d(0, 0, 0);
+	}
+	#slide_wrap:before {
+		top: -52px;
+		font-size: 16px;
+		line-height: 21px;	
+	}
+}
+
+
+/* CSS FOR THIS DEMO*/
+body *, body *:before, body *:after {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	box-sizing: border-box;	
+}
+.lcms_wrap {
+    overflow-y: visible;
+    overflow-x: hidden;
+    border: 7px solid #eee;
+    border-radius: 5px;
+}
+.lcms_play {
+	opacity: 0;
+	
+	-webkit-transition: opacity .2s ease-in .5s; 
+	-ms-transition: 	opacity .2s ease-in .5s; 
+	transition: 		opacity .2s ease-in .5s;
+}
+.lcms_wrap:hover .lcms_play {
+	opacity: 1;
+	
+	-webkit-transition: opacity .2s ease-in 0s; 
+	-ms-transition: 	opacity .2s ease-in 0s; 
+	transition: 		opacity .2s ease-in 0s;
+}
+.lcms_nav, .lcms_play {
+    position: absolute;
+    top: 50%;
+    
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.lcms_nav *:before,
+.lcms_play *:before {
+    text-shadow: 0 0 3px rgba(0,0,0,0.3);
+    color: #fff;
+    font-size: 21px;
+    line-height: 47px;
+    
+    -webkit-transition: all .15s ease-in 0s; 
+    -ms-transition: 	all .15s ease-in 0s; 
+    transition: 		all .15s ease-in 0s;
+} 
+.lcms_nav *:hover:before,
+.lcms_play *:hover:before {
+    color: #848484;
+    text-shadow: none;
+} 
+.lcms_play {
+    width: 100%;
+    text-align: center;
+}
+.lcms_play *,
+.lcms_nav * {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 2px solid #fff;
+    border-radius: 50%;  
+    text-align: center;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    position: relative;
+}
+.lcms_play *:after, .lcms_nav *:after {
+    content: "";
+    background: transparent;
+    display: block;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    border-radius: 50%;
+    border: 0px solid #fff;
+  
+  -webkit-transition: all .25s ease 0s; 
+	-ms-transition: 	all .25s ease 0s; 
+	transition: 		all .25s ease-out 0s;
+}
+.lcms_play *:hover:after, .lcms_nav *:hover:after {
+	border: 23px solid #fff;
+}
+
+.lcms_nav {
+	width: 100%;
+}
+.lcms_prev {
+	position: absolute;
+	left: -13px;
+}
+.lcms_next {
+	position: absolute;
+	right: -13px;
+}
+.lcms_prev, .lcms_next {
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+/* let's add a timer */
+.lcms_play.lcms_pause:before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    
+    -webkit-animation: progress 6.8s linear infinite 0s; /* match  slideshow_time */
+    animation: progress 6.8s linear infinite 0s; /* match slideshow_time + animation_time */
+}
+@-webkit-keyframes progress {
+	0%, 97%, 100% {box-shadow: 0 0 0 rgba(255, 255, 255, 0) inset;}
+	0%, 98%, 100% {box-shadow: 0 0 0 rgba(255, 255, 255, 0) inset;}
+	2% {box-shadow: 0 0 0 rgba(255, 255, 255, 0.3) inset;}
+	94% {box-shadow: 50px 0 0 rgba(255, 255, 255, 0.3) inset;}
+}
+@keyframes progress {
+	0%, 97%, 100% {box-shadow: 0 0 0 rgba(255, 255, 255, 0) inset;}
+	0%, 98%, 100% {box-shadow: 0 0 0 rgba(255, 255, 255, 0) inset;}
+	2% {box-shadow: 0 0 0 rgba(255, 255, 255, 0.3) inset;}
+	94% {box-shadow: 50px 0 0 rgba(255, 255, 255, 0.3) inset;}
+}
+
+/* custom CSS for custom entrance */
+.lcms_before {
+	top: 100%;
+}
+.lcms_after {
+	top: -100%;
+}
+.lcms_before, 
+.lcms_after {
+	left: 0;	
+	
+	-webkit-animation: custom_entrance .81s normal ease; /* match animation_time + little extra */
+	animation: custom_entrance .81s normal ease; /* match animation_time + little extra */
+}
+@-webkit-keyframes custom_entrance {
+	100% {top: 0;}
+}
+@keyframes custom_entrance {
+	100% {top: 0;}
+}
+
+.lcms_prepare_for_prev, 
+.lcms_prepare_for_next {
+	top: 0;
+	left: 0;	
+}
+.lcms_prepare_for_prev {
+	-webkit-animation: custom_exit_p .81s normal ease; /* match animation_time + little extra */
+	animation: custom_exit_p .81s normal ease; /* match animation_time + little extra */
+}
+.lcms_prepare_for_next {
+	-webkit-animation: custom_exit_n .81s normal ease; /*match animation_time*/
+	animation: custom_exit_n .81s normal ease;	/*match animation_time*/ 
+}
+@-webkit-keyframes custom_exit_n {100% {top: 100%;}}
+@keyframes custom_exit_n {100% {top: 100%;}}
+
+@-webkit-keyframes custom_exit_p {100% {top: -100%;}}
+@keyframes custom_exit_p {100% {top: -100%;}}
+
+
+/* default CSS3 loader */
+.lcms_loader:before,
+.lcms_loader:after {
+	content: "";
+	position: absolute;
+	height: 0px;
+	width: 0px;
+	top: 50%;
+	left: 50%;
+	margin-top: 0;
+	margin-left: 0;	
+	border-radius: 50%;
+	
+	-webkit-animation: lcms_loader 2s infinite  ease-in-out;
+	animation: lcms_loader 2s infinite ease-in-out;
+}
+.lcms_loader:before {
+	z-index: 100; 
+	background: #555;
+	background: rgba(50, 50, 50, 0.4);
+}
+.lcms_loader:after {
+	z-index: 110; 
+	background: #777;
+	background: rgba(70, 70, 70, 0.4);
+	-webkit-animation-delay: -1s;
+	animation-delay: -1s;
+}
+@-webkit-keyframes lcms_loader {
+	0% { width: 0; height: 0; margin-top: 0; margin-left: 0; }
+	50% { width: 30px; height: 30px; margin-top: -15px; margin-left: -15px; }
+	100% { width: 0; height: 0; margin-top: 0; margin-left: 0; }
+}
+@keyframes lcms_loader {
+	0% { width: 0; height: 0; margin-top: 0; margin-left: 0; }
+	50% { width: 30px; height: 30px; margin-top: -15px; margin-left: -15px; }
+	100% { width: 0; height: 0; margin-top: 0; margin-left: 0; }
+}
+
+</style>
+</head>
+
+<body>
+	<h1>LC Micro Slider</h1>
+	<h3>A superlight jquery plugin by <a href="http://lcweb.it/" target="_blank">LCweb</a></h3>
+
+	<div id="slide_wrap">
+      <ul style="display: none;">
+        <li lcms_img="https://images.unsplash.com/photo-1470165511815-34e78ff7a111?dpr=1&auto=format&fit=crop&w=1500&h=1000&q=80"></li>
+        <li lcms_img="https://images.unsplash.com/photo-1481777198967-38af7434dd5d?dpr=1&auto=format&fit=crop&w=1500&h=1000&q=80"></li>
+        <li lcms_img="https://images.unsplash.com/photo-1483388381485-344c3a9ded7f?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80"></li>
+      </ul>
+    </div>
+    
+	<script type="text/javascript">
+	$(document).ready(function(e) {
+		$('#slide_wrap').lc_micro_slider({
+			slide_fx : 'none',
+			animation_time	: 800,
+			slideshow_time	: 6000,
+			nav_arrows : true,  
+			slideshow_cmd : true,
+			nav_dots : false,
+			autoplay: true,
+			pause_on_hover: false
+	  });
+	});
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LC Micro Slider - mixed contets</title>
+
+
+<script src="https://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
+
+<script src="../assets/jquery.touchSwipe.min.js" type="text/javascript"></script>
+<script src="../js/lc-micro-slider.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../css/lc-micro-slider.css" />
+<link rel="stylesheet" href="../css/default_style.css" />
+
+
+
+<style type="text/css">
+/* resetter */
+a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
+
+
+/* AVOID ISSUES ON LOCAL WITH ICONS - ignore this on production */
+@font-face {
+	font-family: 'lcms';
+	src:
+		url('font/fonts/lcms.woff') format('woff'),
+		url('font/fonts/lcms.ttf') format('truetype'),
+		url('font/fonts/lcms.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+/**************************************************************/
+
+
+body * {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	box-sizing: border-box;	
+}
+h1, h3 {
+	text-align: center;
+	padding: 12px 50px;
+}
+h1 {
+	font-weight: bold;
+	font-size: 34px;	
+	padding-bottom: 0;
+	margin-top: 18px;
+}
+h3 {a
+	font-size: 17px;	
+}
+#slide_wrap {
+	width: 90%;
+	max-width: 1200px;
+	height: 58vw;
+    max-height: 670px;	
+	background: #eee;
+	margin: 50px auto;
+}
+#slide_wrap:before {
+	content: "No autoplay - simple slide - no play/pause";	
+	font-size: 19px;
+    position: absolute;
+    top: -40px;
+}
+
+@media screen and (max-width:1340px) {
+	#slide_wrap {
+		position: static;	
+		margin: 100px auto;
+		
+		-webkit-transform:  translate3d(0, 0, 0);
+		-ms-transform: 		translate(0, 0);
+		transform: 			translate3d(0, 0, 0);
+	}
+	#slide_wrap:before {
+		top: -52px;
+		font-size: 16px;
+		line-height: 21px;	
+	}
+}
+
+
+/* CSS FOR THIS DEMO*/
+.lcms_contents_fullheight .lcms_content {
+	top: 0;
+}
+.lcms_nopadding .lcms_content {
+	padding: 0;	
+}
+.lcms_txt_padding .lcms_content {
+	padding: 25px;	
+	overflow: auto;
+	font-size: 15px;
+	line-height: 20px;
+	background: rgba(0, 0, 0, 0.45);
+}
+#txt_heading {
+    font-size: 30px; 
+    margin: 15px 0 28px; 
+    color: #fff; 
+    background: #7fc241; 
+    padding: 14px 15px; 
+    display:  inline-block;
+}
+</style>
+</head>
+
+<body>
+	<h1>LC Micro Slider</h1>
+	<h3>A superlight jquery plugin by <a href="http://lcweb.it/" target="_blank">LCweb</a></h3>
+
+	<div id="slide_wrap">
+        <ul style="display: none;">
+            <li lcms_img="https://images.unsplash.com/photo-1483388381485-344c3a9ded7f?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80">That's a maple leaf!</li>
+            <li class="lcms_contents_fullheight lcms_nopadding">
+                <iframe style="height: 100%; width: 100%;" src="https://player.vimeo.com/video/40291524?rel=0" frameborder="0" allowfullscreen></iframe>
+            </li>
+            <li class="lcms_contents_fullheight lcms_txt_padding" lcms_img="https://images.unsplash.com/photo-1482160310982-3adf8b38daef?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80">
+                <h4 id="txt_heading">Also some plain text!</h4>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.</p> <p>Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est</p>
+            </li>
+        </ul>
+    </div>
+    
+	<script type="text/javascript">
+    $(document).ready(function(e) {
+		$('#slide_wrap').lc_micro_slider({
+			slide_fx        : 'slide',
+			nav_arrows      : false,
+			slideshow_cmd   : false,
+			animation_time  : 700,
+			slideshow_time  : 7000,
+			autoplay        : true,
+			pause_on_hover  : true
+		});
+    });
+    </script>
+
+</body>
+</html>
