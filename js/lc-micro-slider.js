@@ -1,6 +1,6 @@
 /**
- * lc_micro_slider.js - lightweight responsive slider with jquery.touchSwipe.js integration
- * Version: 1.2
+ * lc_micro_slider.js - lightweight responsive slider with jquery.touchSwipe.js (or AlloyFinger) integration
+ * Version: 1.2.1
  * Author: Luca Montanari aka LCweb
  * Website: http://www.lcweb.it
  * Licensed under the MIT license
@@ -15,7 +15,7 @@
 			nav_dots		: true,		// (bool) shows navigation dots
 			slideshow_cmd	: true,		// (bool) shows slideshow commands (play/pause)
 			carousel		: true,		// (bool) non-stop carousel
-			touchswipe		: true,		// (bool) enable touch navigation (requires jquery.touchSwipe.js)
+			touchswipe		: true,		// (bool) enable touch navigation (requires jquery.touchSwipe.js or AlloyFinger)
 			autoplay		: false,	// (bool) starts the slideshow
 			animation_time	: 700, 		// (int) animation timing in millisecods / 1000 = 1sec
 			slideshow_time	: 5000, 	// (int) interval time of the slideshow in milliseconds / 1000 = 1sec	
@@ -93,7 +93,7 @@
 			
 			// touchswipe
 			$(document).ready(function(e) {
-				if(typeof($.fn.swipe) == 'function') {
+				if(typeof($.fn.swipe) == 'function' || typeof(AlloyFinger) == 'function') {
 					touchswipe();
 				}
 			});
@@ -334,22 +334,40 @@
 		
 		// touchswipe	
 		var touchswipe = function() {
-			$('.lcms_wrap').swipe({
-				swipeRight: function() {
-					var $subj = jQuery(this).parent();
-
-					$subj.lcms_stop_slideshow();
-					lcms_slide($subj, 'prev');		
-				},
-				swipeLeft: function() {
-					var $subj = jQuery(this).parent();
-				
-					$subj.lcms_stop_slideshow();
-					lcms_slide($subj, 'next');		
-				},
-				threshold: 40,
-				allowPageScroll: 'vertical'
-			});	
+			if(typeof($.fn.swipe) == 'function') { // touchSwipe
+				$lcms_wrap_obj.find('.lcms_wrap').swipe({
+					swipeRight: function() {
+						var $subj = jQuery(this).parent();
+	
+						$subj.lcms_stop_slideshow();
+						lcms_slide($subj, 'prev');		
+					},
+					swipeLeft: function() {
+						var $subj = jQuery(this).parent();
+					
+						$subj.lcms_stop_slideshow();
+						lcms_slide($subj, 'next');		
+					},
+					threshold: 40,
+					allowPageScroll: 'vertical'
+				});	
+			}
+			
+			else if(typeof(AlloyFinger) == 'function') { // alloyFinger
+				new AlloyFinger( $lcms_wrap_obj.find('.lcms_wrap')[0] , {
+					swipe:function(evt){
+						var $subj = jQuery(this).parent();
+						$subj.lcms_stop_slideshow();
+						
+						if(evt.direction === "Right"){
+							lcms_slide($subj, 'prev');		
+						}
+						else if(evt.direction === "Left"){
+							lcms_slide($subj, 'next');	
+						}
+					}
+				});
+			}
 		};
 		
 		
