@@ -1,6 +1,6 @@
 /**
  * lc_micro_slider.js - lightweight responsive slider with jquery.touchSwipe.js (or AlloyFinger) integration
- * Version: 1.2.1
+ * Version: 1.3
  * Author: Luca Montanari aka LCweb
  * Website: http://www.lcweb.it
  * Licensed under the MIT license
@@ -29,6 +29,7 @@
 			slides : [], 		// slides array -> object {content - img}
 			shown_slide : 0,	// shown slide index
 			cached_img: [],		// array containing cached images
+			uniqid: '',
 			is_sliding : false,
 			is_playing : false,
 			paused_on_hover : false 
@@ -58,15 +59,23 @@
 				vars.slides.push(obj);
             });
 			
-			// populate with first to show
-			$wrap_obj.html('<div class="lcms_wrap"><div class="lcms_container"></div></div>');
+			// setup structure
+			vars.uniqid = 'lcms_'+ Math.floor(Math.random()* 1000000) + new Date().getMilliseconds();
+			$wrap_obj.html('<div class="lcms_wrap '+ vars.uniqid +'"><div class="lcms_container"></div></div>');
 			
+			// populate with first to show
 			vars.shown_slide = 0;
 			populate_slide($wrap_obj, 'init', 0);
 			
 			// populate with arrows
 			if(settings.nav_arrows && vars.slides.length > 1) {
-				$wrap_obj.find('.lcms_wrap').addClass('lcms_has_nav_arr').prepend('<div class="lcms_nav"><span class="lcms_prev"></span><span class="lcms_next"></span></div>');	
+				var disabled_btn = (settings.carousel) ? '' : 'lcms_disabled_btn';
+				$wrap_obj.find('.lcms_wrap').addClass('lcms_has_nav_arr').prepend('<div class="lcms_nav"><span class="lcms_prev '+disabled_btn+'"></span><span class="lcms_next"></span></div>');	
+			}
+			
+			// populate with slideshow commands
+			if(settings.slideshow_cmd && vars.slides.length > 1) {
+				$wrap_obj.find('.lcms_wrap').addClass('lcms_has_ss_cmd').prepend('<div class="lcms_play"><span></span></div>');	
 			}
 			
 			// populate with full nav dots
@@ -78,10 +87,22 @@
 				$wrap_obj.find('.lcms_nav_dots span').first().addClass('lcms_sel_dot');
 			}
 			
-			// populate with slideshow commands
-			if(settings.slideshow_cmd && vars.slides.length > 1) {
-				$wrap_obj.find('.lcms_wrap').addClass('lcms_has_ss_cmd').prepend('<div class="lcms_play"><span></span></div>');	
-			}
+			
+			// setup inline CSS for animation timings
+			$('head').append(
+			'<style type="text/css">'+
+			'.'+ vars.uniqid +' .lcms_before,'+ 
+			'.'+ vars.uniqid +' .lcms_after,'+ 
+			'.'+ vars.uniqid +' .lcms_prepare_for_prev,'+
+			'.'+ vars.uniqid +' .lcms_prepare_for_next {' +
+				'-webkit-animation-duration: '+ settings.animation_time +'ms !important;'+
+				'-ms-animation-duration: '+ settings.animation_time +'ms !important;'+
+				'animation-duration: '+ settings.animation_time +'ms !important;'+
+			'}</style>');	
+		
+			// animation class
+			$wrap_obj.find('.lcms_wrap').addClass('lcms_'+ settings.slide_fx +'_fx');
+		
 			
 			// autoplay
 			if(settings.autoplay) {
@@ -196,8 +217,6 @@
 			if(vars.lcms_is_sliding || vars.slides.length == 1) {return false;}
 			if(typeof(direction) == 'number' && (direction < 0 || direction > (vars.slides.length - 1))) {return false;}
 			
-			vars.lcms_is_sliding = true;
-			
 			// find the new index and populate
 			if(direction == 'prev') {
 				var new_index = (curr_index === 0) ? (vars.slides.length - 1) : (curr_index - 1); 
@@ -210,6 +229,9 @@
 				direction = (new_index > curr_index) ? 'next' : 'prev'; // normalize direction var
 			}
 			
+			vars.lcms_is_sliding = true;
+			$wrap_obj.addClass('lcms_is_sliding lcms_moving_'+direction);
+			
 			// add class to active slide
 			$wrap_obj.find('.lcms_active_slide').addClass('lcms_prepare_for_'+direction);
 			
@@ -221,60 +243,30 @@
 			// trigger custom action | args: new slide index - new slide object - old slide index
 			$wrap_obj.trigger('lcms_changing_slide', [new_index, vars.slides[new_index], curr_index]);
 			
-			// entrance effects
-			if(settings.slide_fx == 'fade') {
-				$wrap_obj.find('.lcms_active_slide').fadeOut(at);	
-			}
 			
-			else if(settings.slide_fx == 'slide') {
-				if(direction == 'prev') {
-					$wrap_obj.find('.lcms_before').css('left', '-100%').animate({left : '0%'}, at);
-					$wrap_obj.find('.lcms_active_slide').animate({left : '100%'}, at);	
-				} else {
-					$wrap_obj.find('.lcms_after').css('left', '100%').animate({left : '0%'}, at);
-					$wrap_obj.find('.lcms_active_slide').animate({left : '-100%'}, at);	
+			// if isn't carousel - manage arrows visibility
+			if(!settings.carousel) {
+				$wrap_obj.find('.lcms_prev, .lcms_next, .lcms_play > span').removeClass('lcms_disabled_btn');	
+				
+				if(!new_index) {
+					$wrap_obj.find('.lcms_prev').addClass('lcms_disabled_btn');
+				}
+				else if(new_index == (vars.slides.length - 1)) {
+					$wrap_obj.find('.lcms_next, .lcms_play > span').addClass('lcms_disabled_btn');
 				}
 			}
 			
-			else if(settings.slide_fx == 'fadeslide') {
-				if(direction == 'prev') {
-					$wrap_obj.find('.lcms_before').fadeTo(0, 0).animate({left : '0%', opacity: 1}, at);
-					$wrap_obj.find('.lcms_active_slide').animate({left : '100%', opacity: 0}, at);	
-				} else {
-					$wrap_obj.find('.lcms_after').fadeTo(0, 0).animate({left : '0%', opacity: 1}, at);
-					$wrap_obj.find('.lcms_active_slide').animate({left : '-100%', opacity: 0}, at);	
-				}
-			}
 
-			else if(settings.slide_fx == 'zoom-in') {
-				$wrap_obj.find('.lcms_before, .lcms_after').fadeTo(0, 0).animate(
-					{opacity: 1},
-					{step: function(now, fx) {
-						var val = 0.5 + (now / 2);
-						$(this).css('-ms-transform','scale('+val+')').css('-webkit-transform','scale('+val+')').css('transform','scale('+val+')'); 
-					},
-					duration: at
-				});
-			}
-			
-			else if(settings.slide_fx == 'zoom-out') {
-				$wrap_obj.find('.lcms_before, .lcms_after').fadeTo(0, 0).animate(
-					{opacity: 1},
-					{step: function(now, fx) {
-						var val = 1.5 - (now / 2);
-						$(this).css('-ms-transform','scale('+val+')').css('-webkit-transform','scale('+val+')').css('transform','scale('+val+')'); 
-					},
-					duration: at
-				});
-			}
-
-
+			// after sliding fx 
 			setTimeout(function() {
 				$wrap_obj.find('.lcms_active_slide').remove();
+				
+				vars.lcms_is_sliding = false;
+				$wrap_obj.removeClass('lcms_is_sliding lcms_moving_'+direction);
+				
 				$wrap_obj.find('.lcms_slide').removeClass('lcms_fadein lcms_before lcms_after').addClass('lcms_active_slide');
 
-				vars.lcms_is_sliding = false;
-				
+
 				// trigger custom action | args: new slide index - slide object
 				$wrap_obj.trigger('lcms_new_active_slide', [new_index, vars.slides[new_index]]);
 			}, at); 

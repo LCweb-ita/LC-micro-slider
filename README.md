@@ -10,7 +10,7 @@ Well:
 * Touch-ready using TouchSwipe or AlloyFinger
 * has got public methods and actions
 * can slide anything
-* is just 13KB (JS + CSS)
+* is just 18KB (JS + CSS, including sliding effects)
 
 ..and yes, has got an **image lazyloader**!
 
