@@ -11,6 +11,7 @@
 		
 		var settings = $.extend({
 			slide_fx		: 'fadeslide',	// (string) sliding effect / none - slide - fade - fadeslide - zoom-in - zoom-out
+			slide_easing	: 'ease',	// (string) CSS animation easing to use / ease - linear - ease-in (etc) [supports also cubic-bezier]
 			nav_arrows		: true,		// (bool) shows navigation arrows 
 			nav_dots		: true,		// (bool) shows navigation dots
 			slideshow_cmd	: true,		// (bool) shows slideshow commands (play/pause)
@@ -88,20 +89,32 @@
 			}
 			
 			
-			// setup inline CSS for animation timings
-			$('head').append(
-			'<style type="text/css">'+
-			'.'+ vars.uniqid +' .lcms_before,'+ 
-			'.'+ vars.uniqid +' .lcms_after,'+ 
-			'.'+ vars.uniqid +' .lcms_prepare_for_prev,'+
-			'.'+ vars.uniqid +' .lcms_prepare_for_next {' +
-				'-webkit-animation-duration: '+ settings.animation_time +'ms !important;'+
-				'-ms-animation-duration: '+ settings.animation_time +'ms !important;'+
-				'animation-duration: '+ settings.animation_time +'ms !important;'+
-			'}</style>');	
-		
-			// animation class
-			$wrap_obj.find('.lcms_wrap').addClass('lcms_'+ settings.slide_fx +'_fx');
+			if(settings.slide_fx && settings.slide_fx != 'none') {
+			
+				// use custom easing?
+				if(settings.slide_easing && settings.slide_easing != 'ease') {
+					var easing_code = 
+					'-webkit-animation-timing-function: '+ settings.slide_easing +' !important;'+
+					'animation-timing-function: '+ settings.slide_easing +' !important;';
+				} else {
+					var easing_code = '';
+				}
+			
+				// setup inline CSS for animation timings
+				$('head').append(
+				'<style type="text/css">'+
+				'.'+ vars.uniqid +' .lcms_before,'+ 
+				'.'+ vars.uniqid +' .lcms_after,'+ 
+				'.'+ vars.uniqid +' .lcms_prepare_for_prev,'+
+				'.'+ vars.uniqid +' .lcms_prepare_for_next {' +
+					'-webkit-animation-duration: '+ settings.animation_time +'ms !important;'+
+					'animation-duration: '+ settings.animation_time +'ms !important;'+
+					easing_code +
+				'}</style>');	
+			
+				// animation class
+				$wrap_obj.find('.lcms_wrap').addClass('lcms_'+ settings.slide_fx +'_fx');
+			}
 		
 			
 			// autoplay
