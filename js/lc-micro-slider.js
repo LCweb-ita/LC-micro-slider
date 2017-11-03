@@ -1,6 +1,6 @@
 /**
  * lc_micro_slider.js - lightweight responsive slider with jquery.touchSwipe.js (or AlloyFinger) integration
- * Version: 1.3
+ * Version: 1.3.1
  * Author: Luca Montanari aka LCweb
  * Website: http://www.lcweb.it
  * Licensed under the MIT license
@@ -292,15 +292,21 @@
 		$('.lcms_prev').unbind('click');
 		$lcms_wrap_obj.delegate('.lcms_play', 'click', function() {
 			var $subj = $(this).parents('.lcms_wrap').parent();
+			var vars = $subj.data('lcms_vars');
 			
 			if(jQuery(this).hasClass('lcms_pause')) {
+				if(vars.paused_on_hover) {
+					vars.paused_on_hover = false;	
+				}
+				
 				$subj.lcms_stop_slideshow();	
-			} else {
+			} 
+			else {
 				$subj.lcms_start_slideshow();	
 			}
 		});
 		
-		// prev news - click event
+		// prev element - click event
 		$('.lcms_prev').unbind('click');
 		$lcms_wrap_obj.delegate('.lcms_prev:not(.lcms_disabled)', 'click', function() {
 			var $subj = $(this).parents('.lcms_wrap').parent();
@@ -312,7 +318,7 @@
 			}, 5);
 		});
 		
-		// next news - click event
+		// next element - click event
 		$('.lcms_next').unbind('click');
 		$lcms_wrap_obj.delegate('.lcms_next:not(.lcms_disabled)', 'click', function() {
 			var $subj = $(this).parents('.lcms_wrap').parent();
@@ -385,8 +391,8 @@
 				var settings = $subj.data('lcms_settings');
 				
 				if(vars.is_playing) {
-					$subj.lcms_stop_slideshow();
 					vars.paused_on_hover = true; 
+					$subj.lcms_stop_slideshow();
 				}
 			})
 			.delegate('.lcms_wrap', 'mouseleave', function() {
@@ -476,7 +482,10 @@
 			clearInterval(vars.is_playing);
 			vars.is_playing = null;
 
-			$elem.find('.lcms_play').removeClass('lcms_pause');
+			if(!vars.paused_on_hover) {
+				$elem.find('.lcms_play').removeClass('lcms_pause');
+			}
+			
 			$elem.trigger('lcms_stop_slideshow');
 			return true;
 		};
