@@ -7,7 +7,7 @@ Just 20KB to have:
 
 ### Top features list:
 
-- sigle file, no dependencies, 100% pure javascript
+- single file, no dependencies, 100% pure javascript
 - designed to be themed with no efforts (default theme included + extra theme for demo)
 - themes mix support using prefixed selectors 
 - pure CSS sliding effects (default ones: slide - fade - fadeslide - zoom-in - zoom-out)
