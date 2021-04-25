@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">  
-    <title>LC Micro Slider - Basic - by LCweb</title>
+    <title>LC Micro Slider - Custom Theme - by LCweb</title>
     
     <!-- PAGE BASE CSS -->
     <style type="text/css"> a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
@@ -37,8 +37,7 @@
     }
     </style>
     
-    
-    <link rel="stylesheet" href="../themes/default_theme.css" />
+    <link rel="stylesheet" href="../themes/demo_extra_theme.css" />
 </head>
 <body>
 
@@ -69,15 +68,15 @@
             <!-- //////////////////////////////////////////////// -->
             <!-- REQUIRED HTML -->
 
-            <h3>Basic demo</h3>
+            <h3>Custom theme demo (CSS-driven custom sliding effect and progressbar)</h3>
             
             <div id="slide_wrap">
                 <ul style="display: none;">
-                    <li data-img="../demo_assets/parrot.jpg">Lorem ipsum</li>
+                    <li data-img="../demo_assets/parrot.jpg"></li>
                     <li data-img="../demo_assets/jellyfish.jpg"></li>
-                    <li data-img="../demo_assets/frog.jpg">Dolor sit amet</li>
+                    <li data-img="../demo_assets/frog.jpg"></li>
                     <li data-img="../demo_assets/chameleon.jpg"></li>
-                    <li data-img="../demo_assets/cat.jpg">Consectetur adipiscing elit</li>
+                    <li data-img="../demo_assets/cat.jpg"></li>
                 </ul>
             </div>
             
@@ -97,7 +96,11 @@
     <script type="text/javascript">
     new lc_micro_slider('#slide_wrap', {
         fixed_slide_type    : 'image',   
-        addit_classes       : ['lcms_default_theme']    
+        nav_dots            : false,
+        slide_fx            : 'none',
+        animation_time	    : 800,
+        slideshow_time	    : 6000,
+        addit_classes       : ['lcms_demo_theme']    
     });
     </script>
     <!-- //////////////////////////////////////////////// -->

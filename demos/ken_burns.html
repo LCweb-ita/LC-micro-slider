@@ -1,139 +1,169 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LC Micro Slider - ken burs</title>
-
-
-<script src="https://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
-
-<script src="../assets/jquery.touchSwipe.min.js" type="text/javascript"></script>
-<script src="../js/lc-micro-slider.js" type="text/javascript"></script>
-
-<link rel="stylesheet" href="../css/lc-micro-slider.css" />
-<link rel="stylesheet" href="../css/default_style.css" />
-
-
-
-<style type="text/css">
-/* resetter */
-a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
-
-
-/* AVOID ISSUES ON LOCAL WITH ICONS - ignore this on production */
-@font-face {
-	font-family: 'lcms';
-	src:
-		url('font/fonts/lcms.woff') format('woff'),
-		url('font/fonts/lcms.ttf') format('truetype'),
-		url('font/fonts/lcms.svg') format('svg');
-	font-weight: normal;
-	font-style: normal;
-}
-/**************************************************************/
-
-
-body *, body *:after, body *:after {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	box-sizing: border-box;	
-}
-h1, h3 {
-	text-align: center;
-	padding: 12px 50px;
-}
-h1 {
-	font-weight: bold;
-	font-size: 34px;	
-	padding-bottom: 0;
-	margin-top: 18px;
-}
-h3 {a
-	font-size: 17px;	
-}
-#slide_wrap {
-	width: 90%;
-	max-width: 1200px;
-	height: 58vw;
-    max-height: 670px;	
-	background: #eee;
-	margin: 50px auto;
-}
-#slide_wrap:before {
-	content: "No autoplay - simple slide - no play/pause";	
-	font-size: 19px;
-    position: absolute;
-    top: -40px;
-}
-
-@media screen and (max-width:1340px) {
-	#slide_wrap {
-		position: static;	
-		margin: 100px auto;
-		
-		-webkit-transform:  translate3d(0, 0, 0);
-		-ms-transform: 		translate(0, 0);
-		transform: 			translate3d(0, 0, 0);
-	}
-	#slide_wrap:before {
-		top: -52px;
-		font-size: 16px;
-		line-height: 21px;	
-	}
-}
-</style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">  
+    <title>LC Micro Slider - Ken Burs - by LCweb</title>
+    
+    <!-- PAGE BASE CSS -->
+    <style type="text/css"> a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
+        
+    *{box-sizing:border-box;line-height:normal}body{background:#fcfcfc;font-family:sans-serif;color:#303030}.container:after{content:"";display:block;clear:both}.header{text-align:center;padding:40px 20px 20px;background:#343434;border-bottom:4px solid #7dc242;position:relative;z-index:2;overflow:hidden;color:#fefefe;}#logo{border:0;background:#343434;padding:0;position:relative;bottom:-5px;width:29px;margin-right:5px}svg{filter:blur(1px);opacity:.015;position:absolute;top:0;left:0;right:0;bottom:0;transform:rotate(3deg) scale(1.35);z-index:-1}.left-shade{fill:#afafaf}.right-shade{fill:#bfbfbf}.header h2{font-size:34px;margin-top:-12px;}.header h4{font-size:18px;font-weight:400;line-height:135%;margin:15px 0;color:#f0f0f0;}.header h4 a{color:#cfcfcf;}.content{max-width:1200px; margin:auto;}
+    </style>
+    
+    
+    <style>
+    .content > h3 {
+        font-size: 1.4em;
+        margin: 35px auto -18px;
+        max-width: 920px;
+    }
+    #slide_wrap {
+        width: 90%;
+        max-width: 920px;
+        height: 40vw;
+        max-height: 550px;
+        margin: 40px auto 20px;
+    }
+    @media screen and (max-width:1030px) { 
+        #slide_wrap {
+            height: 60vh;
+            max-height: none;
+        }
+        .content > h3 {
+            margin: 35px 5% -18px;
+            text-align: center;
+        }
+    }
+    </style>
+    
+    
+    <link rel="stylesheet" href="../themes/default_theme.css" />
 </head>
-
 <body>
-	<h1>LC Micro Slider</h1>
-	<h3>A superlight jquery plugin by <a href="http://lcweb.it/" target="_blank">LCweb</a></h3>
 
-	<div id="slide_wrap">
-      <ul style="display: none;">
-        <li lcms_img="https://images.unsplash.com/photo-1470165511815-34e78ff7a111?dpr=1&auto=format&fit=crop&w=1500&h=1000&q=80"></li>
-        <li lcms_img="https://images.unsplash.com/photo-1481777198967-38af7434dd5d?dpr=1&auto=format&fit=crop&w=1500&h=1000&q=80"></li>
-        <li lcms_img="https://images.unsplash.com/photo-1483388381485-344c3a9ded7f?dpr=1&auto=format&fit=crop&w=1500&h=1001&q=80"></li>
-      </ul>
+    <div class="container">
+        <div class="header">
+            <h2>
+                <img id="logo" src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAlCAMAAAD7q3BLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAxQTFRFS1NFfsJCx8jKNDQ0SyWmjgAAAAR0Uk5T////AEAqqfQAAACySURBVHja7JTLFsQgCEOD/P8/jw9EgjiLWU88XQi3sSoUSgJaQwrRRNqQ4EWgbQEVcfKTuQgwEGxQGZANXnlnUCzAS0Hf+WXTB3lA1vDAPBxHEMWbWnM+bnFXse1g2ZnOBjshlhuPbPVZIIzRk7+JGYnAr4R8J/RPXGcaxXd77i71JxHi7+pVY0KMEVTudKXji69aj5WVidUvSgwRiH1bEMi9n4jc+26zCdT/ICdi9CPAAHRlCGHRLtsqAAAAAElFTkSuQmCC" />
+                LC Micro Slider
+            </h2>
+            <h4>Light and modern vanilla javascript contents slider, by <a href="https://lcweb.it" target="_blank">LCweb</a></h4>
+            
+            <svg width="100%" height="100%">
+                <pattern id="pattern-cubes" x="0" patternUnits="userSpaceOnUse" viewBox="0 0 10 16" height="100" width="116" y="68">
+                    <g id="cube">
+                        <path class="left-shade" d="M0 0l5 3v5l-5 -3z" />
+                        <path class="right-shade" d="M10 0l-5 3v5l5 -3" />
+                    </g>
+                    <use x="5" y="8" xlink:href="#cube" />
+                    <use x="-5" y="8" xlink:href="#cube" />
+                </pattern>
+                <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-cubes)" />
+            </svg>
+        </div>
+        
+        <div class="content">
+              
+        
+            <!-- //////////////////////////////////////////////// -->
+            <!-- REQUIRED HTML -->
+
+            <h3>Ken Burns effect demo (JS randomized movement using plugin events)</h3>
+            
+            <div id="slide_wrap">
+                <ul style="display: none;">
+                    <li data-img="../demo_assets/parrot.jpg"></li>
+                    <li data-img="../demo_assets/jellyfish.jpg"></li>
+                    <li data-img="../demo_assets/frog.jpg"></li>
+                    <li data-img="../demo_assets/chameleon.jpg"></li>
+                    <li data-img="../demo_assets/cat.jpg"></li>
+                </ul>
+            </div>
+            
+            <!-- //////////////////////////////////////////////// -->
+        
+        
+        </div>
     </div>
     
-	<script type="text/javascript">
-    $(document).ready(function(e) {
-		$('#slide_wrap').lc_micro_slider({
-			slide_fx : 'zoom-out',
-			animation_time	: 1000,
-			slideshow_time	: 6000,
-			nav_arrows : false,  
-			slideshow_cmd : false,
-			nav_dots : false,
-			autoplay: true,
-			pause_on_hover: false
-	  });
-	
-	
-		//// ken burns effect
-		// get random value for random direction
-		function lcms_kenburns_random_vert() {
-			var vals = ["top", "botom"];
-		   return vals[Math.floor(Math.random() * vals.length)];
-		}
-		function lcms_kenburns_random_horiz() {
-			var vals = ["left", "right"];
-			return vals[Math.floor(Math.random() * vals.length)];
-		}
-	
-		// catch event	
-		$(document).on('lcms_initial_slide_shown lcms_new_active_slide', '#slide_wrap', function(e, slide_index) {	
-	
-			var time = $(this).data('lcms_settings').slideshow_time;
-	
-			var props = {};
-			props[ lcms_kenburns_random_vert() ] = '-20%';
-			props[ lcms_kenburns_random_horiz() ] = '-20%';
-	
-			$(this).find('.lcms_slide[rel='+slide_index+'] .lcms_bg').animate(props, time, 'linear'); 
-		});
-	});
+    
+    <!-- //////////////////////////////////////////////// -->
+    <!-- REQUIRED JAVASCRIPT -->
+    
+    
+    <script src="../lc-micro-slider.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+    const timing = 8000;
+        
+        
+    new lc_micro_slider('#slide_wrap', {
+        fixed_slide_type    : 'image',  
+        slide_fx            : 'zoom-out',
+        animation_time	    : 1000,
+        slideshow_time	    : timing,
+        nav_arrows          : true,  
+        slideshow_cmd       : false,
+        autoplay            : true,
+        pause_on_hover      : false,
+        addit_classes       : ['lcms_default_theme']    
+    });
+        
+        
+        
+    //// ken burns effect
+    let ken_burns_intval,
+        curr_comb = '';
+        
+    const ken_burns = function($subj, slide_index) {
+        if(ken_burns_intval) {
+            clearInterval(ken_burns_intval);    
+        }
+        ken_burns_intval = setInterval(() => {
+            ken_burns_fx($subj, slide_index);
+        }, timing);    
+        
+        ken_burns_fx($subj, slide_index);
+    };
+        
+    const ken_burns_fx = function($subj, slide_index) {
+              vert_opts     = ["top", "bottom"],
+              horiz_opts    = ["left", "right"];
+        
+        if(document.getElementById('lcms_kenburns')) {
+            document.getElementById('lcms_kenburns').remove();        
+        }
+
+        const vert_rule  = vert_opts[Math.floor(Math.random() * vert_opts.length)], 
+              horiz_rule = horiz_opts[Math.floor(Math.random() * horiz_opts.length)];
+         
+        // force movement
+        if(curr_comb == vert_rule+horiz_rule) {
+            ken_burns_fx($subj, slide_index);      
+        }
+        
+        const code = `
+        <style id="lcms_kenburns">
+        #slide_wrap .lcms_slide[data-index="${ slide_index }"] .lcms_bg {
+            transition: all ${ timing }ms linear;
+            ${ vert_rule }: -20%;
+            ${ horiz_rule }: -20%;
+        }
+        </style>`;
+        document.head.insertAdjacentHTML('beforeend', code);        
+    };
+        
+        
+    document.getElementById('slide_wrap').addEventListener('lcms_initial_slide_shown', (e) => {
+        ken_burns(e, e.detail.slide_index);
+    });
+    document.getElementById('slide_wrap').addEventListener('lcms_slide_shown', (e) => {
+        ken_burns(e, e.detail.new_index);
+    });  
     </script>
+    <!-- //////////////////////////////////////////////// -->
+
 
 </body>
 </html>

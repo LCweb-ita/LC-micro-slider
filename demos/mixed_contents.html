@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">  
-    <title>LC Micro Slider - Basic - by LCweb</title>
+    <title>LC Micro Slider - Mixed Contents - by LCweb</title>
     
     <!-- PAGE BASE CSS -->
     <style type="text/css"> a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,div,dl,dt,em,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,html,i,iframe,img,ins,kbd,label,legend,li,mark,menu,nav,object,ol,output,p,pre,q,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
@@ -25,6 +25,60 @@
         max-height: 550px;
         margin: 40px auto 20px;
     }
+    .lcms_contents_fullheight .lcms_content {
+        top: 0;
+    }
+    .lcms_nopadding .lcms_content {
+        padding: 0;	
+    }
+    .lcms_txt_padding .lcms_content {
+        padding: 25px;	
+        overflow: auto;
+        font-size: 15px;
+        line-height: 20px;
+        background: rgba(0, 0, 0, 0.45);
+    }
+    #txt_heading {
+        font-size: 30px;
+        margin: 0 0 28px;
+        color: #fff;
+        background: linear-gradient(-251deg, #348f50 , #56b4d3);
+        padding: 14px 15px;
+        display: inline-block;
+        border-radius: 2px;
+        text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+    .lcms_content > p {
+        line-height: 1.4em;    
+    }
+
+    #extra_nav_left, 
+    #extra_nav_right {
+        color: #aaa;
+        opacity: 0.7;
+        cursor: pointer;
+        position: relative;
+        top: -325px;
+        margin-top: -10px;
+        width: 60px;
+        filter: none !important;
+        z-index: 9999;
+        transform: none;
+        transition: opacity .2s ease;
+    }
+    #extra_nav_left {
+        left: 30px;
+        right: auto;
+    }
+    #extra_nav_right {
+        right: 30px;
+        left: auto;
+        float: right;
+    }
+    #extra_nav_left:hover, 
+    #extra_nav_right:hover {
+        opacity: 1;    
+    }
     @media screen and (max-width:1030px) { 
         #slide_wrap {
             height: 60vh;
@@ -33,6 +87,23 @@
         .content > h3 {
             margin: 35px 5% -18px;
             text-align: center;
+        }
+    }    
+    @media screen and (max-width:1200px) { 
+        #slide_wrap {
+            width: 100%;
+            max-width: calc(100% - 130px);
+        }
+        #extra_nav_left, 
+        #extra_nav_right {
+            width: 30px;
+            top: -33vh;
+        }
+        #extra_nav_left {
+            left: 18px;
+        }
+        #extra_nav_right {
+            right: 18px;
         }
     }
     </style>
@@ -69,17 +140,35 @@
             <!-- //////////////////////////////////////////////// -->
             <!-- REQUIRED HTML -->
 
-            <h3>Basic demo</h3>
+            <h3>Mixed contents demo (+ extra arrows to navigate using public methods)</h3>
             
             <div id="slide_wrap">
                 <ul style="display: none;">
-                    <li data-img="../demo_assets/parrot.jpg">Lorem ipsum</li>
-                    <li data-img="../demo_assets/jellyfish.jpg"></li>
-                    <li data-img="../demo_assets/frog.jpg">Dolor sit amet</li>
-                    <li data-img="../demo_assets/chameleon.jpg"></li>
-                    <li data-img="../demo_assets/cat.jpg">Consectetur adipiscing elit</li>
+                    
+                    <li data-img="../demo_assets/parrot.jpg">A colorful parrot!</li>
+                    
+                    <li>
+                        <iframe style="height: 100%; width: 100%;" src="https://player.vimeo.com/video/40291524?rel=0" frameborder="0" allowfullscreen></iframe>
+                    </li>
+                    <li>
+                        <video controls autoplay muted>
+                            <source src="../demo_assets/squirrel.mp4" type="video/mp4">
+                        </video> 
+                    </li>
+                    
+                    <li data-img="../demo_assets/cat.jpg">
+                        <h4 id="txt_heading">Also some plain text!</h4>
+                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.</p> <p>Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est</p>
+                    </li>
+                    
                 </ul>
             </div>
+            
+            
+            <svg aria-hidden="true" focusable="false" data-prefix="far" id="extra_nav_left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 504C119 504 8 393 8 256S119 8 256 8s248 111 248 248-111 248-248 248zM142.1 273l135.5 135.5c9.4 9.4 24.6 9.4 33.9 0l17-17c9.4-9.4 9.4-24.6 0-33.9L226.9 256l101.6-101.6c9.4-9.4 9.4-24.6 0-33.9l-17-17c-9.4-9.4-24.6-9.4-33.9 0L142.1 239c-9.4 9.4-9.4 24.6 0 34z"></path></svg>
+            
+            
+            <svg aria-hidden="true" focusable="false" data-prefix="far" id="extra_nav_right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8c137 0 248 111 248 248S393 504 256 504 8 393 8 256 119 8 256 8zm113.9 231L234.4 103.5c-9.4-9.4-24.6-9.4-33.9 0l-17 17c-9.4 9.4-9.4 24.6 0 33.9L285.1 256 183.5 357.6c-9.4 9.4-9.4 24.6 0 33.9l17 17c9.4 9.4 24.6 9.4 33.9 0L369.9 273c9.4-9.4 9.4-24.6 0-34z"></path></svg>
             
             <!-- //////////////////////////////////////////////// -->
         
@@ -96,9 +185,23 @@
     
     <script type="text/javascript">
     new lc_micro_slider('#slide_wrap', {
-        fixed_slide_type    : 'image',   
-        addit_classes       : ['lcms_default_theme']    
+        slide_fx        : 'slide',
+        nav_arrows      : false,
+        slideshow_cmd   : true,
+        animation_time  : 700,
+        slideshow_time  : 3000,
+        autoplay        : true,
+        pause_on_hover  : false,
+        addit_classes : ['lcms_default_theme'],
     });
+        
+       
+    document.getElementById('extra_nav_left').addEventListener('click', () => {
+        lcms_slide('#slide_wrap', 'prev');        
+    });    
+    document.getElementById('extra_nav_right').addEventListener('click', () => {
+        lcms_slide('#slide_wrap', 'next');        
+    });   
     </script>
     <!-- //////////////////////////////////////////////// -->
 

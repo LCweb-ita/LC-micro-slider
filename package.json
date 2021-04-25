@@ -1,0 +1,56 @@
+{
+    "author": "LCweb",
+    "name": "lc-micro-slider",
+    "version": "2.0.0",
+    "description": "Lightweight vanilla javascript (ES6) media and contents slider",
+    "keywords": [
+        "javascript",
+        "slider",
+        "vanilla-javascript",
+        "image-slider",
+        "javascript-plugin",
+        "content-slider",
+        "carousel",
+        "touch",
+        "slideshow",
+        'touchswipe'
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LCweb-ita/LC-micro-slider.git"
+    },
+    "files": [
+        "lc-micro-slider.min.js",
+        "themes"
+    ],
+    "dependencies": {},
+    "devDependencies": {},
+    "contributors": [
+        {
+            "name": "LCweb-ita",
+            "url": "https://github.com/LCweb-ita"
+        }
+    ],
+    "license": "MIT",
+    "homepage": "https://lcweb.it/lc-micro-slider-javascript-plugin",
+    "bugs": "https://github.com/LCweb-ita/LC-micro-slider/issues",
+    "_extra": {
+        "title": "LC Micro Slider",
+        "license": {
+            "type": "MIT",
+            "url": "https://github.com/LCweb-ita/LC-micro-slider/blob/main/LICENSE"
+        },
+        "links": {
+            "download": "https://github.com/LCweb-ita/LC-micro-slider/releases",
+            "docs": "https://github.com/LCweb-ita/LC-micro-slider"
+        },
+        "main": [
+            "lc-micro-slider.min.js",
+            "themes"
+        ],
+        "files": [
+            "lc-micro-slider.min.js",
+            "themes"
+        ]
+    }
+}
