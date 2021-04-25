@@ -1,12 +1,12 @@
 {
     "author": "LCweb",
     "name": "lc-micro-slider",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Lightweight vanilla javascript (ES6) media and contents slider",
     "keywords": [
         "javascript",
         "slider",
-        'javascript-slider',
+        "javascript-slider",
         "vanilla-javascript",
         "images-slider",
         "javascript-plugin",
@@ -14,7 +14,7 @@
         "carousel",
         "touch",
         "slideshow",
-        'touchswipe'
+        "touchswipe"
     ],
     "repository": {
         "type": "git",
