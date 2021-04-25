@@ -1,6 +1,6 @@
 /**
  * lc_micro_slider.js - Light and modern vanilla javascript (ES6) contents slider    
- * Version: 2.0
+ * Version: 2.0.1
  * Author: Luca Montanari aka LCweb
  * Website: https://lcweb.it
  * Licensed under the MIT license
@@ -94,7 +94,7 @@
                 if(typeof($wrap_obj.lcms_vars) != 'undefined') {
                     return;    
                 }    
-                $wrap_obj.lcms_vars = vars;
+                $wrap_obj.lcms_vars = JSON.parse(JSON.stringify(vars));
                 
                 
                 // retrieve slides content
@@ -102,7 +102,7 @@
                 if(!$slides.length) {
                     return false;    
                 }
-                
+
                 for(const $slide of $slides) {
                     $slide.querySelectorAll('noscript').forEach(function(noscript) {
                         noscript.remove();    
@@ -114,9 +114,9 @@
                         img		: ($slide.hasAttribute('data-img')) ? $slide.getAttribute('data-img') : false,
                         classes	: ($slide.hasAttribute('class')) ? $slide.getAttribute('class') : '',
                     }); 
-               }
+                }
                 
-                
+
                 // setup structure
                 const uniqid = Math.random().toString(36).substr(2, 9);
                 $wrap_obj.lcms_vars.uniqid = uniqid;
@@ -207,6 +207,8 @@
     
                         const $elem = recursive_parent(e.target, '.lcms_wrap').parentNode;
                         $this.slide($elem, 'prev');
+                       
+                        $wrap_obj.lcms_vars.paused_on_hover = false;
                         $this.stop($elem);
                     });   
                 }
@@ -233,7 +235,6 @@
                     });
 
                     $wrap_obj.addEventListener('mouseleave', (e) => {
-
                         if($wrap_obj.lcms_vars.paused_on_hover) {
                             $wrap_obj.lcms_vars.paused_on_hover = true; 
                             $this.play($wrap_obj);
@@ -325,6 +326,8 @@
                           new_index = parseInt($dot.getAttribute('data-index'), 10);
 
                     $this.slide($elem, new_index);
+                    
+                    $wrap_obj.lcms_vars.paused_on_hover = false;
                     $this.stop($elem);
                 });
             });
@@ -455,7 +458,8 @@
                         bubbles : true,
                         detail  : {
                             slide_index : slide_index,
-                            slide_data  : slide
+                            slide_data  : slide,
+                            silde_elem  : $slide
                         }
                     });
                     $wrap_obj.dispatchEvent(ss_event);
@@ -639,8 +643,8 @@
             if(!$wrap_obj.lcms_vars.is_playing) {
                 return true;    
             }
-            $wrap_obj.classList.removeClass('lcms_is_playing');
-
+            $wrap_obj.classList.remove('lcms_is_playing');
+            
             clearInterval($wrap_obj.lcms_vars.is_playing);
             $wrap_obj.lcms_vars.is_playing = null;
 

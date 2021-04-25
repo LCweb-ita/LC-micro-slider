@@ -116,16 +116,19 @@
     let ken_burns_intval,
         curr_comb = '';
         
-    const ken_burns = function($subj, slide_index) {
+    document.getElementById('slide_wrap').addEventListener('lcms_slide_shown', (e) => {
+        const $subj = e.target,
+              slide_index = e.detail.slide_index;
+
         if(ken_burns_intval) {
             clearInterval(ken_burns_intval);    
         }
         ken_burns_intval = setInterval(() => {
             ken_burns_fx($subj, slide_index);
         }, timing);    
-        
+
         ken_burns_fx($subj, slide_index);
-    };
+    });
         
     const ken_burns_fx = function($subj, slide_index) {
               vert_opts     = ["top", "bottom"],
@@ -137,30 +140,31 @@
 
         const vert_rule  = vert_opts[Math.floor(Math.random() * vert_opts.length)], 
               horiz_rule = horiz_opts[Math.floor(Math.random() * horiz_opts.length)];
-         
+              
         // force movement
         if(curr_comb == vert_rule+horiz_rule) {
             ken_burns_fx($subj, slide_index);      
         }
         
-        const code = `
-        <style id="lcms_kenburns">
-        #slide_wrap .lcms_slide[data-index="${ slide_index }"] .lcms_bg {
-            transition: all ${ timing }ms linear;
-            ${ vert_rule }: -20%;
-            ${ horiz_rule }: -20%;
-        }
-        </style>`;
-        document.head.insertAdjacentHTML('beforeend', code);        
-    };
         
-        
-    document.getElementById('slide_wrap').addEventListener('lcms_initial_slide_shown', (e) => {
-        ken_burns(e, e.detail.slide_index);
-    });
-    document.getElementById('slide_wrap').addEventListener('lcms_slide_shown', (e) => {
-        ken_burns(e, e.detail.new_index);
-    });  
+        let animation = {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0
+        };
+        animation[ vert_rule ] = '-20%';
+        animation[ horiz_rule ] = '-20%';
+
+        document.querySelector('#slide_wrap .lcms_slide[data-index="'+ slide_index +'"] .lcms_bg').animate(
+            animation,
+            {
+                duration: timing,
+                iterations: 1,
+                fill: 'forwards'
+            }
+        );       
+    };  
     </script>
     <!-- //////////////////////////////////////////////// -->
 
