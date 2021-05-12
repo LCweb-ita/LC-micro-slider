@@ -204,6 +204,13 @@ $el.addEventListener('lcms_ready', (e) => {
 });
 
 
+// dispatched whenever very first slide is populated, before preloading
+$el.addEventListener('lcms_first_populated', (e) => {
+    
+    // e.detail.slide_data - (object) slide data 
+});
+
+
 // dispatched whenever a new slide is shown (after lazyload)
 $el.addEventListener('lcms_slide_shown', (e) => {
     

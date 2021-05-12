@@ -1,6 +1,6 @@
 /**
  * lc_micro_slider.js - Light and modern vanilla javascript (ES6) contents slider    
- * Version: 2.0.1
+ * Version: 2.0.2
  * Author: Luca Montanari aka LCweb
  * Website: https://lcweb.it
  * Licensed under the MIT license
@@ -87,9 +87,8 @@
                 style_generated = true;
             }
             
-
             maybe_querySelectorAll(attachTo).forEach(function($wrap_obj) {
-                
+
                 // do not initialize twice
                 if(typeof($wrap_obj.lcms_vars) != 'undefined') {
                     return;    
@@ -145,7 +144,7 @@
                 
                 // extra nav cmd
                 if(options.extra_cmd_code) {
-                    $slider_wrap.insertAdjacentHTML('afterbegin', extra_cmd_code );   
+                    $slider_wrap.insertAdjacentHTML('afterbegin', options.extra_cmd_code);   
                 }
                 
                 
@@ -165,6 +164,16 @@
                 // populate with first to show
                 $wrap_obj.lcms_vars.shown_slide = 0;
                 $this.populate_slide($wrap_obj, 'init', 0);
+                
+                
+                // dispatched whenever very first slide is populated, before preloading | args: slide object
+                const first_pop_event = new CustomEvent('lcms_first_populated', {
+                    bubbles : true,
+                    detail  : {
+                        slide_data : $wrap_obj.lcms_vars.slides[0]    
+                    }
+                });
+                $wrap_obj.dispatchEvent(first_pop_event);
                 
                 
                 // sliding fx setup
@@ -246,7 +255,7 @@
                 // swipe integration for touch?
                 if(options.touchswipe) {
                     const swipe_threshold = 30;
-                    new swiper($slider_wrap, function(directions, $swiped_el) {
+                    new swiper($slider_wrap.querySelector('.lcms_container'), function(directions, $swiped_el) {
                        
                         if(directions.left && directions.left >= swipe_threshold) {
                             lcms_slide($wrap_obj, 'next');        
@@ -373,7 +382,6 @@
             
 			const $this = this, 
                   slide = $wrap_obj.lcms_vars.slides[ slide_index ],
-                  preload_class = (slide.img) ? 'lcms_preload' : '',
                   loader_code = (slide.img) ? options.loader_code : '';
             
 			let fx_class;
@@ -397,9 +405,8 @@
 			      contents   = (slide.content.toString().trim()) ? '<div class="lcms_content">'+ slide.content +'</div>' : '',
                   
                   slide_code = 
-                    '<div class="lcms_slide '+ fx_class +' '+ preload_class +'" data-index="'+ slide_index +'" data-type="'+ slide.type +'">'+
-                        '<div class="lcms_inner '+ slide.classes +'">'+ bg + contents +'</div>'+ 
-                        loader_code +
+                    '<div class="lcms_slide '+ fx_class +'" data-index="'+ slide_index +'" data-type="'+ slide.type +'">'+
+                        '<div class="lcms_inner '+ slide.classes +'">'+ bg + contents +'</div>'+
                     '</div>';
 			
 			// populate
@@ -409,24 +416,29 @@
 			// preload current element	
 			if(slide.img) {
 				if(cached_img.indexOf(slide.img) === -1 ) {
+                    $slide.classList.add('lcms_preload');
+                    
+                    // show preloader
+                    if(loader_code) {
+                        $slide.insertAdjacentHTML('beforeend', loader_code);
+                    }
+                    
+                    // lazyload image
 					let img = new Image();
                     img.src = slide.img;
 
                     img.onload = (e) => {
                         cached_img.push(slide.img);    
-
                         $slide.classList.remove('lcms_preload');
-                        $slide.childNodes.forEach(function(el) {
-                            if(el.classList.contains('lcms_inner')) {
-                                return;    
+                        
+                        // remove preloader
+                        if(loader_code) {
+                            for(const el of $slide.children) {
+                                if(!el.classList || !el.classList.contains('lcms_inner')) {
+                                    el.remove(); 
+                                }
                             }
-                            
-                            el.classList.add('lcms_cached');
-
-                            setTimeout(() => {
-                                el.remove();                
-                            }, 300);
-                        });
+                        }
                         
                         // dispatched whenever a new slide is shown (after lazyload) | args: slide index - slide data object - slide DOM object
 						const ss_event = new CustomEvent('lcms_slide_shown', {
@@ -443,16 +455,7 @@
                 }
 
                 // image already cached
-				else {
-                    $slide.classList.remove('lcms_preload');
-
-                    $slide.childNodes.forEach(function(el) {
-                        if(el.classList.contains('lcms_inner')) {
-                            return;    
-                        }
-                        el.remove();    
-                    });
-                    
+				else {  
 					// dispatched whenever a new slide is shown | args: slide index - slide object
                     const ss_event = new CustomEvent('lcms_slide_shown', {
                         bubbles : true,
@@ -1142,7 +1145,19 @@
     const maybe_querySelectorAll = (selector) => {
              
         if(typeof(selector) != 'string') {
-            return (selector instanceof Element) ? [selector] : Object.values(selector);   
+            if(selector instanceof Element) { // JS or jQuery 
+                return [selector];
+            }
+            else {
+                let to_return = [];
+                
+                for(const obj of selector) {
+                    if(obj instanceof Element) {
+                        to_return.push(obj);    
+                    }
+                }
+                return to_return;
+            }
         }
         
         // clean problematic selectors
@@ -1232,6 +1247,5 @@
         this.init();
         return this;
     };
-    
     
 })();
