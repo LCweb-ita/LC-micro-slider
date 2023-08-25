@@ -1,7 +1,7 @@
 /**
  * lc_micro_slider.js - Light and modern vanilla javascript (ES6) contents slider    
- * Version: 2.0.2
- * Author: Luca Montanari aka LCweb
+ * Version: 2.1.0
+ * Author: Luca Montanari (LCweb)
  * Website: https://lcweb.it
  * Licensed under the MIT license
  */
@@ -107,11 +107,23 @@
                         noscript.remove();    
                     });
                 
+                    let img = false,
+                        using_srcset = false;
+                    
+                    if($slide.hasAttribute('data-srcset')) {
+                        img = $slide.getAttribute('data-srcset');
+                        using_srcset = true;
+                    }
+                    else if($slide.hasAttribute('data-img')) {
+                        img = $slide.getAttribute('data-img');        
+                    }
+                    
                     $wrap_obj.lcms_vars.slides.push({
-                        type    : $this.get_slide_type($slide),
-                        content : $slide.innerHTML,
-                        img		: ($slide.hasAttribute('data-img')) ? $slide.getAttribute('data-img') : false,
-                        classes	: ($slide.hasAttribute('class')) ? $slide.getAttribute('class') : '',
+                        type            : $this.get_slide_type($slide),
+                        content         : $slide.innerHTML,
+                        img             : img,
+                        using_srcset    : using_srcset,
+                        classes         : ($slide.hasAttribute('class')) ? $slide.getAttribute('class') : '',
                     }); 
                 }
                 
@@ -354,7 +366,7 @@
             }
             
             // try guessing it
-            if($slide.hasAttribute('data-img')) {
+            if($slide.hasAttribute('data-img') || $slide.hasAttribute('data-srcset')) {
                 return ($slide.children.length) ? 'mixed' : 'image'
             }  
             else {
@@ -375,10 +387,43 @@
         
         
         
+        /* lazy-loading image (src or srcset) - use onload_cb to fire events once image is loaded. Passes image_url, width and height */
+        this.lazyload_img = async function(slide_obj) {
+            if(!slide_obj.img || cached_img.indexOf(slide_obj.img) !== -1) {
+                return true;
+            }
+            const img = new Image();
+            
+            // srcset
+            if(slide_obj.using_srcset) {
+                const waitFor = delay => new Promise(resolve => setTimeout(resolve, delay)); // in-async setTieout solution
+                
+                let $srcset_img = document.createElement("IMG");
+                $srcset_img.srcset = slide_obj.img;
+
+                await waitFor(1); // wait for srcset
+                
+                img.src = $srcset_img.currentSrc;
+                $srcset_img = null; 
+            }
+            
+            // normal image URL
+            else {
+                img.src = slide_obj.img;    
+            }
+
+            await img.decode();
+            cached_img.push(slide_obj.img);
+
+            Promise.resolve(true);
+        };
+        
+        
+        
         /* populate slide and append it in the slider
 		 * type -> init - fade - prev - next
 		 */
-		this.populate_slide = function($wrap_obj, type, slide_index) {
+		this.populate_slide = async function($wrap_obj, type, slide_index) {
             
 			const $this = this, 
                   slide = $wrap_obj.lcms_vars.slides[ slide_index ],
@@ -401,8 +446,8 @@
             }
 			
 			// contents block
-			const bg 		 = (slide.img) ? '<div class="lcms_bg" style="background-image: url('+ slide.img +');"></div>' : '',
-			      contents   = (slide.content.toString().trim()) ? '<div class="lcms_content">'+ slide.content +'</div>' : '',
+			const bg         = (slide.img) ? `<div class="lcms_bg"><img srcset="${ slide.img }" /></div>` : '',
+                  contents   = (slide.content.toString().trim()) ? '<div class="lcms_content">'+ slide.content +'</div>' : '',
                   
                   slide_code = 
                     '<div class="lcms_slide '+ fx_class +'" data-index="'+ slide_index +'" data-type="'+ slide.type +'">'+
@@ -415,86 +460,47 @@
             
 			// preload current element	
 			if(slide.img) {
-				if(cached_img.indexOf(slide.img) === -1 ) {
-                    $slide.classList.add('lcms_preload');
-                    
-                    // show preloader
-                    if(loader_code) {
-                        $slide.insertAdjacentHTML('beforeend', loader_code);
-                    }
-                    
-                    // lazyload image
-					let img = new Image();
-                    img.src = slide.img;
-
-                    img.onload = (e) => {
-                        cached_img.push(slide.img);    
-                        $slide.classList.remove('lcms_preload');
-                        
-                        // remove preloader
-                        if(loader_code) {
-                            for(const el of $slide.children) {
-                                if(!el.classList || !el.classList.contains('lcms_inner')) {
-                                    el.remove(); 
-                                }
-                            }
+                $slide.classList.add('lcms_preload');
+                
+                // show preloader
+                if(loader_code) {
+                    $slide.insertAdjacentHTML('beforeend', loader_code);
+                }
+                
+                await $this.lazyload_img(slide);
+                $slide.classList.remove('lcms_preload');
+                
+                // remove preloader
+                if(loader_code) {
+                    for(const el of $slide.children) {
+                        if(!el.classList || !el.classList.contains('lcms_inner')) {
+                            el.remove(); 
                         }
-                        
-                        // dispatched whenever a new slide is shown (after lazyload) | args: slide index - slide data object - slide DOM object
-						const ss_event = new CustomEvent('lcms_slide_shown', {
-                            bubbles : true,
-                            detail  : {
-                                slide_index : slide_index,
-                                slide_data  : slide,
-                                silde_elem  : $slide
-                            }
-                        });
-                        $wrap_obj.dispatchEvent(ss_event);
-                        
-                    };
+                    }
                 }
 
-                // image already cached
-				else {  
-					// dispatched whenever a new slide is shown | args: slide index - slide object
-                    const ss_event = new CustomEvent('lcms_slide_shown', {
-                        bubbles : true,
-                        detail  : {
-                            slide_index : slide_index,
-                            slide_data  : slide,
-                            silde_elem  : $slide
-                        }
-                    });
-                    $wrap_obj.dispatchEvent(ss_event);
-				}
+                // dispatched whenever a new slide is shown (after lazyload) | args: slide index - slide data object - slide DOM object
+                const ss_event = new CustomEvent('lcms_slide_shown', {
+                    bubbles : true,
+                    detail  : {
+                        slide_index : slide_index,
+                        slide_data  : slide,
+                        silde_elem  : $slide
+                    }
+                });
+                $wrap_obj.dispatchEvent(ss_event);
 			}
 			
             
-			// smart preload - previous and next
+			// smart preload - previous and next (after current slide has been shown)
 			if($wrap_obj.lcms_vars.slides.length > 1) {
 				const next_load = (slide_index < ($wrap_obj.lcms_vars.slides.length - 1)) ? (slide_index + 1) : 0;
-				
-				if(cached_img.indexOf( $wrap_obj.lcms_vars.slides[ next_load ].img ) === -1 ) {
-					let img = new Image();
-                    img.src = $wrap_obj.lcms_vars.slides[ next_load ].img;
-
-                    img.onload = (e) => {
-                        cached_img.push(img.src);    
-                    };
-				}
+				$this.lazyload_img($wrap_obj.lcms_vars.slides[ next_load ]);
 			}
             
 			if($wrap_obj.lcms_vars.slides.length > 2) {
 				const prev_load = (!slide_index) ? ($wrap_obj.lcms_vars.slides.length - 1) : (slide_index - 1); 
-				
-                if(cached_img.indexOf( $wrap_obj.lcms_vars.slides[ prev_load ].img ) === -1 ) {
-					let img = new Image();
-                    img.src = $wrap_obj.lcms_vars.slides[ prev_load ].img;
-
-                    img.onload = (e) => {
-                        cached_img.push(img.src);    
-                    };
-				}
+				$this.lazyload_img($wrap_obj.lcms_vars.slides[ prev_load ]);
 			}	
             
             
@@ -511,8 +517,7 @@
         
         /*** change shown slide - direction could be next/prev or slide index ***/
 		this.slide = function($wrap_obj, direction) {
-			const at         = options.animation_time,
-                  curr_index = $wrap_obj.lcms_vars.shown_slide;
+			const curr_index = $wrap_obj.lcms_vars.shown_slide;
 			
             if(direction != 'prev' && direction != 'next' && typeof(direction) != 'number') {
                 return false;    
@@ -605,7 +610,7 @@
                     }
                 });
                 $wrap_obj.dispatchEvent(nas_event);
-			}, at); 
+			}, options.animation_time); 
 		};
         
         
@@ -695,6 +700,7 @@
 	z-index: 100;
 	top: 0%;
 	left: 0%;
+    transform-style: preserve-3d;
 }
 .lcms_inner {
 	width: 100%;
@@ -721,11 +727,11 @@
 	right: 0;
 	bottom: 0;
 	z-index: 10;
-	
-	background: transparent; 
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-size: cover;		
+}
+.lcms_bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 .lcms_content {
 	z-index: 20;
@@ -757,7 +763,12 @@
 .lcms_sel_dot {
 	cursor: default !important;	
 }
-
+.lcms_moving_next .lcms_slide_fx .lcms_active_slide,
+.lcms_moving_next .lcms_slide_fx .lcms_after,
+.lcms_moving_prev .lcms_slide_fx .lcms_active_slide,
+.lcms_moving_prev .lcms_slide_fx .lcms_before {
+    animation: lcms_foo .7s normal forwards ease;
+}
 
 
 /* slide type rules */
@@ -782,7 +793,7 @@
 
 /* fade */
 .lcms_is_sliding .lcms_fade_fx .lcms_active_slide {
-	animation: lcms_fade .7s normal ease;
+	animation-name: lcms_fade;
 }
 @keyframes lcms_fade {
     100% {opacity: 0;}
@@ -792,7 +803,7 @@
 
 /* slide */
 .lcms_moving_prev .lcms_slide_fx .lcms_before {
-	animation: lcms_slide_new_p .7s normal ease;	
+	animation-name: lcms_slide_new_p;	
 }
 @keyframes lcms_slide_new_p {
 	0% {left: -100%;}
@@ -801,7 +812,7 @@
 
 
 .lcms_moving_prev .lcms_slide_fx .lcms_active_slide {
-	animation: lcms_slide_p .7s normal ease;	
+	animation-name: lcms_slide_p;	
 }
 @keyframes lcms_slide_p {
 	0% {left: 0;}
@@ -810,7 +821,7 @@
 
 
 .lcms_moving_next .lcms_slide_fx .lcms_after {
-	animation: lcms_slide_new_n .7s normal ease;	
+	animation-name: lcms_slide_new_n;	
 }
 @keyframes lcms_slide_new_n {
 	0% {left: 100%;}
@@ -819,7 +830,7 @@
 
 
 .lcms_moving_next .lcms_slide_fx .lcms_active_slide {
-	animation: lcms_slide_n .7s normal ease;	
+	animation-name: lcms_slide_n;	
 }
 @keyframes lcms_slide_n {
 	0% {left: 0;}
@@ -830,7 +841,7 @@
 
 /* vertical slide */
 .lcms_moving_prev .lcms_v_slide_fx .lcms_before {
-	animation: lcms_v_slide_new_p .7s normal ease;	
+	animation-name: lcms_v_slide_new_p;	
 }
 @keyframes lcms_v_slide_new_p {
 	0% {top: -100%;}
@@ -839,7 +850,7 @@
 
 
 .lcms_moving_prev .lcms_v_slide_fx .lcms_active_slide {
-	animation: lcms_v_slide_p .7s normal ease;	
+	animation-name: lcms_v_slide_p;	
 }
 @keyframes lcms_v_slide_p {
 	0% {top: 0;}
@@ -848,7 +859,7 @@
 
 
 .lcms_moving_next .lcms_v_slide_fx .lcms_after {
-	animation: lcms_v_slide_new_n .7s normal ease;	
+	animation-name: lcms_v_slide_new_n;	
 }
 @keyframes lcms_v_slide_new_n {
 	0% {top: 100%;}
@@ -857,7 +868,7 @@
 
 
 .lcms_moving_next .lcms_v_slide_fx .lcms_active_slide {
-	animation: lcms_v_slide_n .7s normal ease;	
+	animation-name: lcms_v_slide_n;	
 }
 @keyframes lcms_v_slide_n {
 	0% {top: 0;}
@@ -868,7 +879,7 @@
 
 /* overlap */
 .lcms_moving_prev .lcms_overlap_fx .lcms_before {
-	animation: lcms_overlap_p .7s normal ease;	
+	animation-name: lcms_overlap_p;	
 }
 @keyframes lcms_overlap_p {
 	0% {left: -100%;}
@@ -877,7 +888,7 @@
 
 
 .lcms_moving_next .lcms_overlap_fx .lcms_after {
-	animation: lcms_overlap_n .7s normal ease;	
+	animation-name: lcms_overlap_n;	
 }
 @keyframes lcms_overlap_n {
 	0% {left: 100%;}
@@ -888,7 +899,7 @@
 
 /* vertical overlap */
 .lcms_moving_prev .lcms_v_overlap_fx .lcms_before {
-	animation: lcms_v_overlap_p .7s normal ease;	
+	animation-name: lcms_v_overlap_p;	
 }
 @keyframes lcms_v_overlap_p {
 	0% {top: -100%;}
@@ -897,7 +908,7 @@
 
 
 .lcms_moving_next .lcms_v_overlap_fx .lcms_after {
-	animation: lcms_v_overlap_n .7s normal ease;	
+	animation-name: lcms_v_overlap_n;	
 }
 @keyframes lcms_v_overlap_n {
 	0% {top: 100%;}
@@ -908,7 +919,7 @@
 
 /* fadeslide */
 .lcms_moving_prev .lcms_fadeslide_fx .lcms_before {
-	animation: lcms_fadeslide_new_p .7s normal ease;	
+	animation-name: lcms_fadeslide_new_p;	
 }
 @keyframes lcms_fadeslide_new_p {
 	0% {
@@ -923,7 +934,7 @@
 
 
 .lcms_moving_prev .lcms_fadeslide_fx .lcms_active_slide {
-	animation: lcms_fadeslide_p .7s normal ease;	
+	animation-name: lcms_fadeslide_p;	
 }
 @keyframes lcms_fadeslide_p {
 	0% {
@@ -938,7 +949,7 @@
 
 
 .lcms_moving_next .lcms_fadeslide_fx .lcms_after {
-	animation: lcms_fadeslide_new_n .7s normal ease;	
+	animation-name: lcms_fadeslide_new_n;	
 }
 @keyframes lcms_fadeslide_new_n {
 	0% {
@@ -953,7 +964,7 @@
 
 
 .lcms_moving_next .lcms_fadeslide_fx .lcms_active_slide {
-	animation: lcms_fadeslide_n .7s normal ease;	
+	animation-name: lcms_fadeslide_n;	
 }
 @keyframes lcms_fadeslide_n {
 	0% {
@@ -970,7 +981,7 @@
 
 /* zoom-in */
 .lcms_moving_prev .lcms_zoom-in_fx .lcms_before {
-	animation: lcms_zoom-in_new_p .7s normal ease;	
+	animation-name: lcms_zoom-in_new_p;	
 }
 @keyframes lcms_zoom-in_new_p {
 	0% {
@@ -985,7 +996,7 @@
 
 
 .lcms_moving_prev .lcms_zoom-in_fx .lcms_active_slide {
-	animation: lcms_zoom-in_p .7s normal ease;	
+	animation-name: lcms_zoom-in_p;	
 }
 @keyframes lcms_zoom-in_p {
 	0% {
@@ -1000,7 +1011,7 @@
 
 
 .lcms_moving_next .lcms_zoom-in_fx .lcms_after {
-	animation: lcms_zoom-in_new_n .7s normal ease;	
+	animation-name: lcms_zoom-in_new_n;	
 }
 @keyframes lcms_zoom-in_new_n {
 	0% {
@@ -1015,7 +1026,7 @@
 
 
 .lcms_moving_next .lcms_zoom-in_fx .lcms_active_slide {
-	animation: lcms_zoom-in_n .7s normal ease;	
+	animation-name: lcms_zoom-in_n;	
 }
 @keyframes lcms_zoom-in_n {
 	0% {
@@ -1032,7 +1043,7 @@
 
 /* zoom-out */
 .lcms_moving_prev .lcms_zoom-out_fx .lcms_before {
-	animation: lcms_zoom-out_new_p .7s normal ease;	
+	animation-name: lcms_zoom-out_new_p;	
 }
 @keyframes lcms_zoom-out_new_p {
 	0% {
@@ -1047,7 +1058,7 @@
 
 
 .lcms_moving_prev .lcms_zoom-out_fx .lcms_active_slide {
-	animation: lcms_zoom-out_p .7s normal ease;	
+	animation-name: lcms_zoom-out_p;	
 }
 @keyframes lcms_zoom-out_p {
 	0% {
@@ -1062,7 +1073,7 @@
 
 
 .lcms_moving_next .lcms_zoom-out_fx .lcms_after {
-	animation: lcms_zoom-out_new_n .7s normal ease;	
+	animation-name: lcms_zoom-out_new_n;	
 }
 @keyframes lcms_zoom-out_new_n {
 	0% {
@@ -1077,7 +1088,7 @@
 
 
 .lcms_moving_next .lcms_zoom-out_fx .lcms_active_slide {
-	animation: lcms_zoom-out_n .7s normal ease;	
+	animation-name: lcms_zoom-out_n;	
 }
 @keyframes lcms_zoom-out_n {
 	0% {

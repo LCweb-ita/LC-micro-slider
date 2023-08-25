@@ -1,6 +1,6 @@
 # Lightweight vanilla javascript media and contents slider, by LCweb
 
-Just 20KB to have: 
+Just 19KB to have: 
 
 ![](plugin_preview.png)
 
@@ -20,6 +20,7 @@ Just 20KB to have:
 - slideshow with optional autoplay and pause-on-hover
 - carousel navigation
 - integrated touchswipe support
+- srcset images support
 - super customizable and developer-friendly (w/ public functions and events)
 
 
@@ -43,13 +44,15 @@ Few notes anout the HTML structure:
 
  - the target element must contain a UL list. Each list element will be a slide
  - is suggested to use the "data-type" attribute. Possible values: image, video, iframe, mixed<br/>Can be globally defined using *fixed_slide_type* option
- - the "data-img" attributes defines slide's background and is lazyloaded
+ - the "data-img" or "data-srcset" attribute defines slide's background and is lazyloaded
 
 ```
 
 <div id="slider_wrap">
     <ul style="display: none;">
         <li data-img="../demo_assets/parrot.jpg" data-type="image">A colorful parrot!</li>
+        
+        <li data-srcset="../demo_assets/cat.jpg 1920w, ../demo_assets/cat_1024.jpg 1024w, ../demo_assets/cat_512.jpg 512w">Cat's eyes</li>
 
         <li data-type="video">
             <iframe style="height: 100%; width: 100%;" src="https://player.vimeo.com/video/40291524?rel=0" frameborder="0" allowfullscreen></iframe>
