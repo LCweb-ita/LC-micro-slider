@@ -1,7 +1,7 @@
 {
     "author": "LCweb",
     "name": "lc-micro-slider",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Lightweight vanilla javascript (ES6) media and contents slider",
     "keywords": [
         "javascript",

@@ -1,6 +1,6 @@
 /**
  * lc_micro_slider.js - Light and modern vanilla javascript (ES6) contents slider    
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: Luca Montanari (LCweb)
  * Website: https://lcweb.it
  * Licensed under the MIT license
@@ -387,12 +387,27 @@
         
         
         
+        
+        /* waiting for srcset decoding */
+        this.load_img = function(img) {
+            new Promise( resolve => {
+                const img = new Image()
+                img.onload = () => resolve({ url, ratio: img.naturalWidth / img.naturalHeight })
+                img.src = url
+            });
+        };
+        
+        
+        
+        
         /* lazy-loading image (src or srcset) - use onload_cb to fire events once image is loaded. Passes image_url, width and height */
         this.lazyload_img = async function(slide_obj) {
             if(!slide_obj.img || cached_img.indexOf(slide_obj.img) !== -1) {
                 return true;
             }
-            const img = new Image();
+            const img = new Image(),
+                  load_img = img_obj => new Promise( resolve => {img_obj.onload = () => resolve()});
+            
             
             // srcset
             if(slide_obj.using_srcset) {
@@ -401,21 +416,32 @@
                 let $srcset_img = document.createElement("IMG");
                 $srcset_img.srcset = slide_obj.img;
 
-                await waitFor(1); // wait for srcset
-                
-                img.src = $srcset_img.currentSrc;
-                $srcset_img = null; 
+                let img_url;
+                for(let a=0; a<500; a++) {
+                    await waitFor(20); // wait for srcset
+                    img_url = $srcset_img.currentSrc;
+                    
+                    if(img_url) {
+                        break;    
+                    }
+                }
+
+                if(!img_url) {
+                    console.error('LC micro slider - cannot find srcset image url for '+ slide_obj.img);
+                    return false;
+                }
+                else {
+                    img.src = img_url;
+                    $srcset_img = null;
+                }
             }
             
             // normal image URL
             else {
                 img.src = slide_obj.img;    
             }
-
-            await img.decode();
-            cached_img.push(slide_obj.img);
-
-            Promise.resolve(true);
+            
+            await load_img(img);
         };
         
         
