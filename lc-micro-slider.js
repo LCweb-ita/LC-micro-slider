@@ -1,11 +1,10 @@
 /**
  * lc_micro_slider.js - Light and modern vanilla javascript (ES6) contents slider    
- * Version: 2.1.1
+ * Version: 2.1.2
  * Author: Luca Montanari (LCweb)
  * Website: https://lcweb.it
  * Licensed under the MIT license
  */
-
 
 (function() { 
 	"use strict";
@@ -402,7 +401,7 @@
         
         /* lazy-loading image (src or srcset) - use onload_cb to fire events once image is loaded. Passes image_url, width and height */
         this.lazyload_img = async function(slide_obj) {
-            if(!slide_obj.img || cached_img.indexOf(slide_obj.img) !== -1) {
+            if(!slide_obj.img) {
                 return true;
             }
             const img = new Image(),
@@ -442,6 +441,7 @@
             }
             
             await load_img(img);
+            cached_img.push(slide_obj.img);
         };
         
         
@@ -449,8 +449,7 @@
         /* populate slide and append it in the slider
 		 * type -> init - fade - prev - next
 		 */
-		this.populate_slide = async function($wrap_obj, type, slide_index) {
-            
+		this.populate_slide = async function($wrap_obj, type, slide_index) {    
 			const $this = this, 
                   slide = $wrap_obj.lcms_vars.slides[ slide_index ],
                   loader_code = (slide.img) ? options.loader_code : '';
@@ -486,21 +485,26 @@
             
 			// preload current element	
 			if(slide.img) {
-                $slide.classList.add('lcms_preload');
-                
-                // show preloader
-                if(loader_code) {
-                    $slide.insertAdjacentHTML('beforeend', loader_code);
+                if(cached_img.indexOf(slide.img) !== -1) {
+                    $slide.classList.add('lcms_cached');
                 }
-                
-                await $this.lazyload_img(slide);
-                $slide.classList.remove('lcms_preload');
-                
-                // remove preloader
-                if(loader_code) {
-                    for(const el of $slide.children) {
-                        if(!el.classList || !el.classList.contains('lcms_inner')) {
-                            el.remove(); 
+                else {
+                    $slide.classList.add('lcms_preload');
+
+                    // show preloader
+                    if(loader_code) {
+                        $slide.insertAdjacentHTML('beforeend', loader_code);
+                    }
+
+                    await $this.lazyload_img(slide);
+                    $slide.classList.remove('lcms_preload');
+
+                    // remove preloader
+                    if(loader_code) {
+                        for(const el of $slide.children) {
+                            if(!el.classList || !el.classList.contains('lcms_inner')) {
+                                el.remove(); 
+                            }
                         }
                     }
                 }
@@ -557,7 +561,7 @@
 			if(typeof(direction) == 'number' && (direction < 0 || direction > ($wrap_obj.lcms_vars.slides.length - 1))) {
                 return false;
             }
-			
+            
 			// find the new index and populate
             let new_index;
             
@@ -618,7 +622,7 @@
 
 			// after sliding fx 
 			setTimeout(() => {
-				$wrap_obj.querySelector('.lcms_active_slide').remove();
+                $wrap_obj.querySelector('.lcms_active_slide').remove();
 				
 				$wrap_obj.lcms_vars.lcms_is_sliding = false;
                 $wrap_obj.classList.remove('lcms_is_sliding', 'lcms_moving_'+direction);
@@ -626,16 +630,16 @@
                 $wrap_obj.querySelector('.lcms_slide').classList.remove('lcms_fadein', 'lcms_before', 'lcms_after');
                 $wrap_obj.querySelector('.lcms_slide').classList.add('lcms_active_slide');
                 
-
-				// dispatched whenever the new slide is in its final position | args: new slide index - slide object
-                const nas_event = new CustomEvent('lcms_new_active_slide', {
-                    bubbles : true,
-                    detail  : {
-                        new_index   : new_index,
-                        slide_data  : $wrap_obj.lcms_vars.slides[new_index]
-                    }
-                });
-                $wrap_obj.dispatchEvent(nas_event);
+                    
+                    // dispatched whenever the new slide is in its final position | args: new slide index - slide object
+                    const nas_event = new CustomEvent('lcms_new_active_slide', {
+                        bubbles : true,
+                        detail  : {
+                            new_index   : new_index,
+                            slide_data  : $wrap_obj.lcms_vars.slides[new_index]
+                        }
+                    });
+                    $wrap_obj.dispatchEvent(nas_event);
 			}, options.animation_time); 
 		};
         
@@ -739,12 +743,13 @@
 	opacity: 0;	
 }
 .lcms_cached {
-	transition: opacity 0s ease-in !important;	
+	transition: none !important;	
 }
 .lcms_slide.lcms_fadein {
 	z-index: 90;	
 }
-.lcms_bg, .lcms_content {
+.lcms_bg,
+.lcms_content {
 	position: absolute;	
 }
 .lcms_bg {
@@ -793,7 +798,7 @@
 .lcms_moving_next .lcms_slide_fx .lcms_after,
 .lcms_moving_prev .lcms_slide_fx .lcms_active_slide,
 .lcms_moving_prev .lcms_slide_fx .lcms_before {
-    animation: lcms_foo .7s normal forwards ease;
+    animation: lcms_foo .7s forwards ease;
 }
 
 
@@ -822,7 +827,8 @@
 	animation-name: lcms_fade;
 }
 @keyframes lcms_fade {
-    100% {opacity: 0;}
+    from {opacity; 1}
+    to {opacity: 0;}
 }
 
 
@@ -832,8 +838,8 @@
 	animation-name: lcms_slide_new_p;	
 }
 @keyframes lcms_slide_new_p {
-	0% {left: -100%;}
-	100% {left: 0;}
+	from {left: -100%;}
+	to {left: 0;}
 }
 
 
@@ -841,8 +847,8 @@
 	animation-name: lcms_slide_p;	
 }
 @keyframes lcms_slide_p {
-	0% {left: 0;}
-	100% {left: 100%;}
+	from {left: 0;}
+	to {left: 100%;}
 }
 
 
@@ -850,8 +856,8 @@
 	animation-name: lcms_slide_new_n;	
 }
 @keyframes lcms_slide_new_n {
-	0% {left: 100%;}
-	100% {left: 0;}
+	from {left: 100%;}
+	to {left: 0;}
 }
 
 
@@ -859,8 +865,8 @@
 	animation-name: lcms_slide_n;	
 }
 @keyframes lcms_slide_n {
-	0% {left: 0;}
-	100% {left: -100%;}
+	from {left: 0;}
+	to {left: -100%;}
 }
 
 
@@ -870,8 +876,8 @@
 	animation-name: lcms_v_slide_new_p;	
 }
 @keyframes lcms_v_slide_new_p {
-	0% {top: -100%;}
-	100% {top: 0;}
+	from {top: -100%;}
+	to {top: 0;}
 }
 
 
@@ -879,8 +885,8 @@
 	animation-name: lcms_v_slide_p;	
 }
 @keyframes lcms_v_slide_p {
-	0% {top: 0;}
-	100% {top: 100%;}
+	from {top: 0;}
+	to {top: 100%;}
 }
 
 
@@ -888,8 +894,8 @@
 	animation-name: lcms_v_slide_new_n;	
 }
 @keyframes lcms_v_slide_new_n {
-	0% {top: 100%;}
-	100% {top: 0;}
+	from {top: 100%;}
+	to {top: 0;}
 }
 
 
@@ -897,8 +903,8 @@
 	animation-name: lcms_v_slide_n;	
 }
 @keyframes lcms_v_slide_n {
-	0% {top: 0;}
-	100% {top: -100%;}
+	from {top: 0;}
+	to {top: -100%;}
 }
 
 
@@ -908,8 +914,8 @@
 	animation-name: lcms_overlap_p;	
 }
 @keyframes lcms_overlap_p {
-	0% {left: -100%;}
-	100% {left: 0;}
+	from {left: -100%;}
+	to {left: 0;}
 }
 
 
@@ -917,8 +923,8 @@
 	animation-name: lcms_overlap_n;	
 }
 @keyframes lcms_overlap_n {
-	0% {left: 100%;}
-	100% {left: 0;}
+	from {left: 100%;}
+	to {left: 0;}
 }
 
 
@@ -928,8 +934,8 @@
 	animation-name: lcms_v_overlap_p;	
 }
 @keyframes lcms_v_overlap_p {
-	0% {top: -100%;}
-	100% {top: 0;}
+	from {top: -100%;}
+	to {top: 0;}
 }
 
 
@@ -937,8 +943,8 @@
 	animation-name: lcms_v_overlap_n;	
 }
 @keyframes lcms_v_overlap_n {
-	0% {top: 100%;}
-	100% {top: 0;}
+	from {top: 100%;}
+	to {top: 0;}
 }
 
 
@@ -948,11 +954,11 @@
 	animation-name: lcms_fadeslide_new_p;	
 }
 @keyframes lcms_fadeslide_new_p {
-	0% {
+	from {
 		opacity: 0;
 		left: -100%;
 	}
-	100% {
+	to {
 		opacity: 1;
 		left: 0;
 	}
@@ -963,11 +969,11 @@
 	animation-name: lcms_fadeslide_p;	
 }
 @keyframes lcms_fadeslide_p {
-	0% {
+	from {
 		opacity: 1;
 		left: 0;
 	}
-	100% {
+	to {
 		opacity: 0;
 		left: 100%;
 	}
@@ -978,11 +984,11 @@
 	animation-name: lcms_fadeslide_new_n;	
 }
 @keyframes lcms_fadeslide_new_n {
-	0% {
+	from {
 		opacity: 0;
 		left: 100%;
 	}
-	100% {
+	to {
 		opacity: 1;
 		left: 0;
 	}
@@ -993,11 +999,11 @@
 	animation-name: lcms_fadeslide_n;	
 }
 @keyframes lcms_fadeslide_n {
-	0% {
+	from {
 		opacity: 1;
 		left: 0;
 	}
-	100% {
+	to {
 		opacity: 0;
 		left: -100%;
 	}
@@ -1010,11 +1016,11 @@
 	animation-name: lcms_zoom-in_new_p;	
 }
 @keyframes lcms_zoom-in_new_p {
-	0% {
+	from {
 		opacity: 0;
 		transform: scale(1.5);
 	}
-	100% {
+	to {
 		opacity: 1;
 		transform: scale(1);
 	}
@@ -1025,11 +1031,11 @@
 	animation-name: lcms_zoom-in_p;	
 }
 @keyframes lcms_zoom-in_p {
-	0% {
+	from {
 		opacity: 1;
 		transform: scale(1);
 	}
-	100% {
+	to {
 		opacity: 0;
 		transform: scale(.5);
 	}
@@ -1040,11 +1046,11 @@
 	animation-name: lcms_zoom-in_new_n;	
 }
 @keyframes lcms_zoom-in_new_n {
-	0% {
+	from {
 		opacity: 0;
 		transform: scale(.5);
 	}
-	100% {
+	to {
 		opacity: 1;
 		transform: scale(1);
 	}
@@ -1055,11 +1061,11 @@
 	animation-name: lcms_zoom-in_n;	
 }
 @keyframes lcms_zoom-in_n {
-	0% {
+	from {
 		opacity: 1;
 		transform: scale(1);
 	}
-	100% {
+	to {
 		opacity: 0;
 		transform: scale(1.5);
 	}
@@ -1072,11 +1078,11 @@
 	animation-name: lcms_zoom-out_new_p;	
 }
 @keyframes lcms_zoom-out_new_p {
-	0% {
+	from {
 		opacity: 0;
 		transform: scale(.5);
 	}
-	100% {
+	to {
 		opacity: 1;
 		transform: scale(1);
 	}
@@ -1087,11 +1093,11 @@
 	animation-name: lcms_zoom-out_p;	
 }
 @keyframes lcms_zoom-out_p {
-	0% {
+	from {
 		opacity: 1;
 		transform: scale(1);
 	}
-	100% {
+	to {
 		opacity: 0;
 		transform: scale(1.5);
 	}
@@ -1102,11 +1108,11 @@
 	animation-name: lcms_zoom-out_new_n;	
 }
 @keyframes lcms_zoom-out_new_n {
-	0% {
+	from {
 		opacity: 0;
 		transform: scale(1.5);
 	}
-	100% {
+	to {
 		opacity: 1;
 		transform: scale(1);
 	}
@@ -1117,11 +1123,11 @@
 	animation-name: lcms_zoom-out_n;	
 }
 @keyframes lcms_zoom-out_n {
-	0% {
+	from {
 		opacity: 1;
 		transform: scale(1);
 	}
-	100% {
+	to {
 		opacity: 0;
 		transform: scale(.5);
 	}

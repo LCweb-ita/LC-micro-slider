@@ -1,6 +1,6 @@
 # Lightweight vanilla javascript media and contents slider, by LCweb
 
-Just 19KB to have: 
+Just 20KB to have: 
 
 ![](plugin_preview.png)
 

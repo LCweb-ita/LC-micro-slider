@@ -155,12 +155,20 @@
 .lcms_demo_theme .lcms_after {
     top: -100%;
 }
-.lcms_demo_theme .lcms_before, 
+.lcms_demo_theme .lcms_before {
+    left: 0;
+    animation: custom_entrance_b .81s forwards ease; /* match animation_time + little extra */
+}
+@keyframes custom_entrance_b {
+    from {top: 100%;}
+    to {top: 0;}
+}
 .lcms_demo_theme .lcms_after {
     left: 0;	
-    animation: custom_entrance .81s normal ease; /* match animation_time + little extra */
+    animation: custom_entrance_a .81s forwards ease; /* match animation_time + little extra */
 }
-@keyframes custom_entrance {
+@keyframes custom_entrance_a {
+    from {top: -100%;}
     100% {top: 0;}
 }
 
@@ -170,16 +178,18 @@
     left: 0;	
 }
 .lcms_demo_theme .lcms_prepare_for_prev {
-    animation: custom_exit_p .81s normal ease; /* match animation_time + little extra */
-}
-.lcms_demo_theme .lcms_prepare_for_next {
-    animation: custom_exit_n .81s normal ease;	/*match animation_time*/ 
-}
-@keyframes custom_exit_n {
-    100% {top: 100%;}
+    animation: custom_exit_p .81s forwards ease; /* match animation_time + little extra */
 }
 @keyframes custom_exit_p {
-    100% {top: -100%;}
+    from {top: 0;}
+    to {top: -100%;}
+}
+.lcms_demo_theme .lcms_prepare_for_next {
+    animation: custom_exit_n .81s forwards ease;	/*match animation_time*/ 
+}
+@keyframes custom_exit_n {
+    from {top: 0;}
+    to {top: 100%;}
 }
 
 
