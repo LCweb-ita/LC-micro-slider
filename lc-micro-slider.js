@@ -1,6 +1,6 @@
 /**
  * lc_micro_slider.js - Light and modern vanilla javascript (ES6) contents slider    
- * Version: 2.1.2
+ * Version: 2.2.0
  * Author: Luca Montanari (LCweb)
  * Website: https://lcweb.it
  * Licensed under the MIT license
@@ -144,13 +144,17 @@
                     const disabled_btn = (options.carousel) ? '' : 'lcms_disabled_btn';
                     
                     $slider_wrap.classList.add('lcms_has_nav_arr');
-                    $slider_wrap.insertAdjacentHTML('afterbegin', '<div class="lcms_nav"><span class="lcms_prev '+ disabled_btn +'"></span><span class="lcms_next"></span></div>'); 
+                    $slider_wrap.insertAdjacentHTML('afterbegin', `
+                        <div class="lcms_nav">
+                            <span class="lcms_prev ${ disabled_btn }" role="button" tabindex="0" aria-label="previous"></span>
+                            <span class="lcms_next" role="button" tabindex="0" aria-label="next"></span>
+                        </div>`); 
                 }
                 
                 // populate with slideshow commands
                 if(options.slideshow_cmd && $wrap_obj.lcms_vars.slides.length > 1) {
                     $slider_wrap.classList.add('lcms_has_ss_cmd');
-                    $slider_wrap.insertAdjacentHTML('afterbegin', '<div class="lcms_play"><span></span></div>'); 
+                    $slider_wrap.insertAdjacentHTML('afterbegin', '<div class="lcms_play" aria-label="play/pause" role="button" tabindex="0"><span></span></div>'); 
                 }
                 
                 // extra nav cmd
@@ -212,36 +216,68 @@
                 ////// BASIC EVENT HANDLERS
                 
                 // play/pause
-                if($wrap_obj.querySelector('.lcms_play')) {
-                    $wrap_obj.querySelector('.lcms_play').addEventListener('click', (e) => {
+                const $play_btn = $wrap_obj.querySelector('.lcms_play');
+                if($play_btn) {
+                    $play_btn.addEventListener('click', (e) => {
+                        if(e.currentTarget.querySelector('.lcms_disabled_btn')) {
+                            return false;   
+                        }
                         
                         const $elem = recursive_parent(e.target, '.lcms_wrap').parentNode;
                         ($wrap_obj.querySelector('.lcms_play').classList.contains('lcms_pause')) ? $this.stop($elem) : $this.play($elem);
+                    });
+                    $play_btn.addEventListener('keydown', (e) => {
+                        if(e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            $play_btn.click();
+                        }
                     });
                 }
                 
                 
                 // prev element - click event
-                if($wrap_obj.querySelector('.lcms_prev')) {
-                   $wrap_obj.querySelector('.lcms_prev:not(.lcms_disabled)').addEventListener('click', (e) => {
-    
+                const $prev_btn = $wrap_obj.querySelector('.lcms_prev');
+                if($prev_btn) {
+                   $prev_btn.addEventListener('click', (e) => {
+                        if(e.currentTarget.classList.contains('lcms_disabled_btn')) {
+                            return false;   
+                        }
+                       
                         const $elem = recursive_parent(e.target, '.lcms_wrap').parentNode;
                         $this.slide($elem, 'prev');
                        
                         $wrap_obj.lcms_vars.paused_on_hover = false;
                         $this.stop($elem);
-                    });   
+                    });
+                    
+                    $prev_btn.addEventListener('keydown', (e) => {
+                        if(e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            $prev_btn.click();
+                        }
+                    });
                 }
                 
                 
                 // next element - click event
-                if($wrap_obj.querySelector('.lcms_next')) {
-                   $wrap_obj.querySelector('.lcms_next:not(.lcms_disabled)').addEventListener('click', (e) => {
-    
+                const $next_btn = $wrap_obj.querySelector('.lcms_next');
+                if($next_btn) {
+                    $next_btn.addEventListener('click', (e) => {
+                        if(e.currentTarget.classList.contains('lcms_disabled_btn')) {
+                            return false;   
+                        }
+                        
                         const $elem = recursive_parent(e.target, '.lcms_wrap').parentNode;
                         $this.slide($elem, 'next');
-                       $this.stop($elem);
-                    });   
+                        $this.stop($elem);
+                    });
+                    
+                    $next_btn.addEventListener('keydown', (e) => {
+                        if(e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            $next_btn.click();
+                        }
+                    });
                 }
                 
                 
@@ -331,7 +367,7 @@
                 let img = $wrap_obj.lcms_vars.slides[a].img;
                 if(!img) {img = '';}
 
-                code += '<span class="'+ sel_class +'" data-index="'+ a +'" data-image="'+ img +'"></span>';
+                code += '<span class="'+ sel_class +'" data-index="'+ a +'" data-image="'+ img +'" role="button" tabindex="0" aria-label="go to slide '+ a +'"></span>';
             }
             $wrap_obj.querySelector('.lcms_nav_dots').innerHTML = code;
             
@@ -349,6 +385,14 @@
                     
                     $wrap_obj.lcms_vars.paused_on_hover = false;
                     $this.stop($elem);
+                });
+                
+                // accessibility
+                $dot.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        $dot.click();
+                    }
                 });
             });
         };
@@ -601,7 +645,7 @@
             $wrap_obj.dispatchEvent(cs_event);
 
 
-			// if isn't carousel - manage arrows visibility
+			// if isn't carousel - manage arrows and  visibility
 			if(!options.carousel) {
                 $wrap_obj.querySelectorAll('.lcms_prev, .lcms_next, .lcms_play > span').forEach(function(el) {
                     el.classList.remove('lcms_disabled_btn');
@@ -609,13 +653,17 @@
                 
 				if(!new_index) {
                     $wrap_obj.querySelectorAll('.lcms_prev').forEach(function(el) {
-                        el.classList.all('lcms_disabled_btn');
+                        el.classList.add('lcms_disabled_btn');
                     });
 				}
 				else if(new_index == ($wrap_obj.lcms_vars.slides.length - 1)) {
                     $wrap_obj.querySelectorAll('.lcms_next, .lcms_play > span').forEach(function(el) {
-                        el.classList.all('lcms_disabled_btn');
+                        el.classList.add('lcms_disabled_btn');
                     });
+                    
+                    if($wrap_obj.querySelector('.lcms_pause')) {
+                        $wrap_obj.querySelector('.lcms_pause').classList.remove('lcms_pause');
+                    }
 				}
 			}
 			

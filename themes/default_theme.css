@@ -73,7 +73,9 @@
 .lcms_default_theme.lcms_wrap:not(.lcms_already_hovered) .lcms_nav,
 .lcms_default_theme.lcms_wrap:not(.lcms_already_hovered) .lcms_play,
 .lcms_default_theme.lcms_wrap:hover .lcms_nav,
-.lcms_default_theme.lcms_wrap:hover .lcms_play {
+.lcms_default_theme.lcms_wrap:hover .lcms_play,
+.lcms_default_theme.lcms_wrap:focus-within .lcms_nav,
+.lcms_default_theme.lcms_wrap:focus-within .lcms_play {
 	opacity: 1;
 	transition: all .2s ease-in 0s;
 	transform: scale(1);
@@ -142,7 +144,10 @@
 }
 .lcms_default_theme .lcms_prev:not(.lcms_disabled_btn):hover:before,
 .lcms_default_theme .lcms_next:not(.lcms_disabled_btn):hover:before,
-.lcms_default_theme .lcms_play *:not(.lcms_disabled_btn):hover:before {
+.lcms_default_theme .lcms_play *:not(.lcms_disabled_btn):hover:before,
+.lcms_default_theme .lcms_prev:not(.lcms_disabled_btn):focus:before,
+.lcms_default_theme .lcms_next:not(.lcms_disabled_btn):focus:before,
+.lcms_default_theme .lcms_play *:not(.lcms_disabled_btn):focus:before{
     opacity: .9;
 }
 
